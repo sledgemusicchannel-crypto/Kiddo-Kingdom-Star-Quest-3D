@@ -151,8 +151,8 @@
   </div>
 </div>
 
-<!-- 7D ORC SUSPENSE ALERT -->
-<div id="orc-alert">⚔️ 7D ORC NEARBY — STOMP OR GROW 2.2x+ TO SMASH!</div>
+<!-- 7D ORC & VEHICLE SUSPENSE ALERT -->
+<div id="orc-alert">⚔️ 7D ORC CHASE — RIDE, FLY, PARACHUTE OR SMASH!</div>
 
 <!-- BOSS HEALTH BAR -->
 <div id="boss-hud">
@@ -177,11 +177,11 @@
 <div class="overlay" id="start-screen">
   <div class="panel">
     <h1>🌟 KIDDO KINGDOM: STAR QUEST 3D</h1>
-    <div class="subtitle">7D Orc Encounters & Multi-Biome Worlds • Feed & Grow to 3.0x Giant • 1–4 Player Squad!</div>
+    <div class="subtitle">Planes, Motorbikes, Parachute Drops, Dinosaurs & Rainforest Creatures • 7D Orcs & 1–4 Player Squad!</div>
 
     <div class="section-label">1. Select Game Mode</div>
     <div class="mode-row">
-      <button class="mode-btn active" id="mode-adventure">🗺️ 10-World Boss Adventure</button>
+      <button class="mode-btn active" id="mode-adventure">🗺️ Long 10-World Quest</button>
       <button class="mode-btn" id="mode-endurance">🔥 7D Endless Endurance</button>
     </div>
 
@@ -231,7 +231,7 @@ const WORLDS = [
   { id: 3, name: 'Coral Sea & Islands', biome: 'sea', sky: 0x0284c7, fog: 0x7dd3fc, ground: 0xfbbf24, accent: 0x22d3ee, baseFreq: 329.6, boss: 'Captain Crab-Claw' },
   { id: 4, name: 'Cloud Sky Kingdom', biome: 'sky', sky: 0x60a5fa, fog: 0xeff6ff, ground: 0xf8fafc, accent: 0xf472b6, baseFreq: 349.2, boss: 'Griffin Sky-Lord' },
   { id: 5, name: 'Crystal Caverns', biome: 'crystal', sky: 0x1e1b4b, fog: 0x312e81, ground: 0x4f46e5, accent: 0x22d3ee, baseFreq: 392.0, boss: 'Golem Rock-Jaw' },
-  { id: 6, name: 'Dino Jungle Valley', biome: 'mountain', sky: 0x15803d, fog: 0xbbf7d0, ground: 0x65a30d, accent: 0xef4444, baseFreq: 440.0, boss: 'Mega T-Rex' },
+  { id: 6, name: 'Dino & Rainforest Wilds', biome: 'rainforest', sky: 0x0f766e, fog: 0x99f6e4, ground: 0x15803d, accent: 0xfacc15, baseFreq: 440.0, boss: 'Apex Rex & Orc Warlord' },
   { id: 7, name: 'Frosty Glacier Peaks', biome: 'mountain', sky: 0x0ea5e9, fog: 0xe0f2fe, ground: 0xe2e8f0, accent: 0x38bdf8, baseFreq: 493.9, boss: 'Yeti Frost-King' },
   { id: 8, name: 'Candy Cloud Carnival', biome: 'sky', sky: 0xec4899, fog: 0xfce7f3, ground: 0xfb7185, accent: 0xfde047, baseFreq: 523.3, boss: 'Captain Cupcake' },
   { id: 9, name: 'Volcano Lava Fortress', biome: 'lava', sky: 0x7f1d1d, fog: 0x991b1b, ground: 0x27272a, accent: 0xf97316, baseFreq: 246.9, boss: 'Magma Dragon' },
@@ -280,7 +280,7 @@ window.showRewardedAd = function(onRewardEarned) {
   }
 };
 
-// ==================== 4. THREE.JS 3D SCENE, MARIO HERO & 7D ORCS ====================
+// ==================== 4. THREE.JS 3D SCENE, MARIO HERO, VEHICLES, DINOSAURS & 7D ORCS ====================
 const canvas = document.getElementById('game-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -288,7 +288,7 @@ renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 renderer.shadowMap.enabled = true;
 
 const scene = new THREE.Scene();
-const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 280);
+const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 340);
 camera.position.set(0, 5, 15);
 
 scene.add(new THREE.HemisphereLight(0xffffff, 0x1e293b, 1.2));
@@ -343,6 +343,56 @@ const legGeo = new THREE.BoxGeometry(0.3, 0.44, 0.34);
 const leftLeg = new THREE.Mesh(legGeo, overallsMat); leftLeg.position.set(0, 0.22, 0.24);
 const rightLeg = new THREE.Mesh(legGeo, overallsMat); rightLeg.position.set(0, 0.22, -0.24);
 
+// 3D Airplane Rig (Fuselage, Wings, Tail, Spinning Propeller)
+const planeGroup = new THREE.Group();
+const planeBody = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.52, 0.65, 2.7, 14),
+  new THREE.MeshStandardMaterial({ color: 0xfacc15, metalness: 0.3, roughness: 0.3 })
+);
+planeBody.rotation.z = Math.PI / 2;
+planeBody.position.y = 0.85;
+const planeWing = new THREE.Mesh(
+  new THREE.BoxGeometry(0.85, 0.1, 3.6),
+  new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.35 })
+);
+planeWing.position.set(0.15, 0.95, 0);
+const planeTail = new THREE.Mesh(
+  new THREE.BoxGeometry(0.45, 0.85, 0.12),
+  new THREE.MeshStandardMaterial({ color: 0xef4444, roughness: 0.35 })
+);
+planeTail.position.set(-1.15, 1.25, 0);
+const planeProp = new THREE.Mesh(
+  new THREE.BoxGeometry(0.08, 1.5, 0.18),
+  new THREE.MeshStandardMaterial({ color: 0x1e293b })
+);
+planeProp.position.set(1.42, 0.85, 0);
+planeGroup.add(planeBody, planeWing, planeTail, planeProp);
+planeGroup.visible = false;
+
+// 3D Motorbike Rig (Frame, Front & Rear Wheels)
+const bikeGroup = new THREE.Group();
+const bikeFrame = new THREE.Mesh(
+  new THREE.BoxGeometry(1.55, 0.38, 0.55),
+  new THREE.MeshStandardMaterial({ color: 0x38bdf8, metalness: 0.4, roughness: 0.25 })
+);
+bikeFrame.position.y = 0.52;
+const wheelGeo = new THREE.TorusGeometry(0.36, 0.12, 10, 20);
+const wheelMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.8 });
+const frontWheel = new THREE.Mesh(wheelGeo, wheelMat); frontWheel.position.set(0.68, 0.36, 0);
+const rearWheel = new THREE.Mesh(wheelGeo, wheelMat); rearWheel.position.set(-0.68, 0.36, 0);
+bikeGroup.add(bikeFrame, frontWheel, rearWheel);
+bikeGroup.visible = false;
+
+// 3D Parachute Canopy
+const chuteGroup = new THREE.Group();
+const chuteCanopy = new THREE.Mesh(
+  new THREE.SphereGeometry(1.65, 20, 12, 0, Math.PI * 2, 0, Math.PI * 0.55),
+  new THREE.MeshStandardMaterial({ color: 0xf97316, emissive: 0x9a3412, emissiveIntensity: 0.25, side: THREE.DoubleSide })
+);
+chuteCanopy.position.set(0, 3.2, 0);
+chuteGroup.add(chuteCanopy);
+chuteGroup.visible = false;
+
 // Visible 3D Armor Shield Dome + Rotating Energy Ring
 const shieldGroup = new THREE.Group();
 const shieldDome = new THREE.Mesh(
@@ -366,10 +416,10 @@ shieldRing.position.y = 1.0;
 shieldGroup.add(shieldDome, shieldRing);
 shieldGroup.visible = false;
 
-playerGroup.add(torsoMesh, overallsMesh, headGroup, leftArm, rightArm, leftLeg, rightLeg, shieldGroup);
+playerGroup.add(torsoMesh, overallsMesh, headGroup, leftArm, rightArm, leftLeg, rightLeg, planeGroup, bikeGroup, chuteGroup, shieldGroup);
 scene.add(playerGroup);
 
-// 7D Orc 3D Builder (Muscular Torso, Iron Pauldrons, Glowing Red Eyes, Tusks, Swinging Limbs)
+// 7D Orc 3D Builder
 function create7DOrcMesh() {
   const orcGroup = new THREE.Group();
   const skin = new THREE.MeshStandardMaterial({ color: 0x4d7c0f, roughness: 0.55 });
@@ -420,12 +470,55 @@ function create7DOrcMesh() {
   return { orcGroup, oLegL, oLegR, auraRing };
 }
 
+// 3D Dinosaur & Rainforest Creature Builder
+function createDinoOrCreatureMesh(kind) {
+  const group = new THREE.Group();
+  const isDino = kind === 'dino';
+  const mainMat = new THREE.MeshStandardMaterial({
+    color: isDino ? 0x15803d : 0xea580c,
+    roughness: 0.45
+  });
+  const spineMat = new THREE.MeshStandardMaterial({
+    color: isDino ? 0xfacc15 : 0x38bdf8,
+    emissive: isDino ? 0x854d0e : 0x0369a1,
+    emissiveIntensity: 0.25
+  });
+
+  const body = new THREE.Mesh(
+    new THREE.BoxGeometry(isDino ? 1.85 : 1.05, isDino ? 1.15 : 0.72, isDino ? 0.95 : 0.75),
+    mainMat
+  );
+  body.position.y = isDino ? 1.05 : 0.65;
+
+  const neckHead = new THREE.Mesh(
+    new THREE.BoxGeometry(isDino ? 0.9 : 0.65, isDino ? 1.1 : 0.6, isDino ? 0.72 : 0.62),
+    mainMat
+  );
+  neckHead.position.set(isDino ? -0.95 : -0.68, isDino ? 1.75 : 0.95, 0);
+
+  const tailOrCrest = new THREE.Mesh(
+    new THREE.ConeGeometry(isDino ? 0.45 : 0.35, isDino ? 1.6 : 0.75, 8),
+    spineMat
+  );
+  tailOrCrest.rotation.z = Math.PI / 2;
+  tailOrCrest.position.set(isDino ? 1.45 : 0.75, isDino ? 1.1 : 0.7, 0);
+
+  const legA = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.55, 0.34), mainMat);
+  legA.position.set(-0.45, 0.28, 0.32);
+  const legB = new THREE.Mesh(new THREE.BoxGeometry(0.32, 0.55, 0.34), mainMat);
+  legB.position.set(0.45, 0.28, -0.32);
+
+  group.add(body, neckHead, tailOrCrest, legA, legB);
+  return { group, legA, legB };
+}
+
 // Level Entities
 let platforms = [];
 let sceneryMeshes = [];
 let collectibles = [];
 let hazards = [];
 let orcs = [];
+let wildCreatures = [];
 let springs = [];
 let particles = [];
 let seaPlane = null;
@@ -436,6 +529,8 @@ let bossEntity = null;
 let state = {
   playing: false,
   mode: 'adventure',
+  vehicleMode: 'foot', // 'foot' | 'plane' | 'bike' | 'parachute'
+  vehicleTimer: 0,
   selectedHero: HEROES[0],
   selectedWorld: WORLDS[0],
   squad: [],
@@ -517,48 +612,80 @@ function buildSquadFromInputs() {
   state.activePlayerIdx = 0;
 }
 
-// ==================== 6. BIOME SCENERY & CHUNK BUILDER ====================
+// ==================== 6. BIOME SCENERY & LONG-QUEST CHUNK BUILDER ====================
 function clearSceneEntities() {
   platforms.forEach(p => scene.remove(p.mesh));
   sceneryMeshes.forEach(s => scene.remove(s));
   collectibles.forEach(c => scene.remove(c.mesh));
   hazards.forEach(h => scene.remove(h.mesh));
   orcs.forEach(o => scene.remove(o.orcGroup));
+  wildCreatures.forEach(wc => scene.remove(wc.group));
   springs.forEach(sp => scene.remove(sp.mesh));
   particles.forEach(pt => scene.remove(pt.mesh));
   if (seaPlane) { scene.remove(seaPlane); seaPlane = null; }
   if (portalMesh) { scene.remove(portalMesh); portalMesh = null; }
   if (bossEntity) { scene.remove(bossEntity.mesh); bossEntity = null; }
-  platforms = []; sceneryMeshes = []; collectibles = []; hazards = []; orcs = []; springs = []; particles = [];
+  platforms = []; sceneryMeshes = []; collectibles = []; hazards = []; orcs = []; wildCreatures = []; springs = []; particles = [];
   document.getElementById('boss-hud').style.display = 'none';
   document.getElementById('orc-alert').style.display = 'none';
+}
+
+function setVehicleMode(mode, frames = 420) {
+  state.vehicleMode = mode;
+  state.vehicleTimer = frames;
+  planeGroup.visible = mode === 'plane';
+  bikeGroup.visible = mode === 'bike';
+  chuteGroup.visible = mode === 'parachute';
+  if (mode === 'plane') {
+    state.vy = 0.24;
+    playSound(540, 'sawtooth', 0.25, 920, 0.14);
+  } else if (mode === 'bike') {
+    playSound(240, 'square', 0.22, 680, 0.14);
+  } else if (mode === 'parachute') {
+    state.vy = Math.max(state.vy, -0.05);
+    playSound(480, 'triangle', 0.25, 260, 0.13);
+  }
+  updateHUD();
 }
 
 function addBiomeScenery(x, y, biome, accentColor) {
   if (biome === 'mountain') {
     const mtn = new THREE.Mesh(
-      new THREE.ConeGeometry(5.5 + (x % 4), 14 + (x % 5), 6),
+      new THREE.ConeGeometry(5.8 + (x % 4), 14.5 + (x % 5), 6),
       new THREE.MeshStandardMaterial({ color: 0x475569, roughness: 0.85 })
     );
     mtn.position.set(x, y + 3.5, -15 - (x % 6));
     scene.add(mtn); sceneryMeshes.push(mtn);
   } else if (biome === 'desert') {
     const pyr = new THREE.Mesh(
-      new THREE.ConeGeometry(6, 9.5, 4),
+      new THREE.ConeGeometry(6.2, 9.8, 4),
       new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.7 })
     );
     pyr.position.set(x, y + 2, -15);
     scene.add(pyr); sceneryMeshes.push(pyr);
   } else if (biome === 'sky') {
     const cloud = new THREE.Mesh(
-      new THREE.DodecahedronGeometry(2.8, 1),
+      new THREE.DodecahedronGeometry(2.9, 1),
       new THREE.MeshStandardMaterial({ color: 0xffffff, transparent: true, opacity: 0.88 })
     );
     cloud.position.set(x, y + 4.8, -10);
     scene.add(cloud); sceneryMeshes.push(cloud);
+  } else if (biome === 'rainforest') {
+    // Tall 3D Rainforest Canopy Trees
+    const trunk = new THREE.Mesh(
+      new THREE.CylinderGeometry(0.38, 0.55, 5.5, 8),
+      new THREE.MeshStandardMaterial({ color: 0x78350f, roughness: 0.85 })
+    );
+    trunk.position.set(x, y + 2.5, -6 - (x % 5));
+    const canopy = new THREE.Mesh(
+      new THREE.DodecahedronGeometry(2.6, 1),
+      new THREE.MeshStandardMaterial({ color: 0x15803d, roughness: 0.65 })
+    );
+    canopy.position.set(x, y + 5.8, -6 - (x % 5));
+    scene.add(trunk, canopy); sceneryMeshes.push(trunk, canopy);
   } else {
     const spire = new THREE.Mesh(
-      new THREE.OctahedronGeometry(3.0),
+      new THREE.OctahedronGeometry(3.1),
       new THREE.MeshStandardMaterial({ color: accentColor, emissive: accentColor, emissiveIntensity: 0.35 })
     );
     spire.position.set(x, y + 2.5, -12);
@@ -567,42 +694,60 @@ function addBiomeScenery(x, y, biome, accentColor) {
 }
 
 function spawnChunk(i, world, isBossArena = false) {
-  const width = isBossArena ? 16 : (i === 0 ? 9 : (3.8 + (i % 3) * 1.1));
-  const x = i * 6.5 + (isBossArena ? 3.5 : 0);
-  const y = (i === 0 || isBossArena) ? 0 : Math.sin(i * 0.85 + world.id) * 2.3;
-  const moving = (!isBossArena && i > 2 && i % 4 === 0);
+  const isRainforestZone = (world.biome === 'rainforest' || i >= 44);
+  const activeBiome = isRainforestZone ? 'rainforest' : world.biome;
+  const activeGround = isRainforestZone ? 0x15803d : world.ground;
 
-  const platMat = new THREE.MeshStandardMaterial({ color: world.ground, roughness: 0.45 });
-  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, 1.3, 4.2), platMat);
+  // Extended highway/runway decks so players can ride motorbikes, fly planes, and drop into rainforests
+  const width = isBossArena ? 20 : (i === 0 ? 11 : (isRainforestZone ? 14 : (5.4 + (i % 3) * 1.4)));
+  const x = i * 7.8 + (isBossArena ? 4.5 : 0);
+  const y = (i === 0 || isBossArena || isRainforestZone) ? 0 : Math.sin(i * 0.72 + world.id) * 2.1;
+  const moving = (!isBossArena && !isRainforestZone && i > 3 && i % 6 === 0);
+
+  const platMat = new THREE.MeshStandardMaterial({ color: activeGround, roughness: 0.45 });
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(width, 1.3, 4.6), platMat);
   mesh.position.set(x, y, 0);
   scene.add(mesh);
   platforms.push({ mesh, w: width, baseY: y, moving, phase: i });
 
-  addBiomeScenery(x + 1.5, y, world.biome, world.accent);
+  addBiomeScenery(x + 1.5, y, activeBiome, world.accent);
 
   if (isBossArena) {
     const bMesh = new THREE.Mesh(
-      new THREE.DodecahedronGeometry(1.85),
+      new THREE.DodecahedronGeometry(1.95),
       new THREE.MeshStandardMaterial({ color: 0xdc2626, emissive: 0x7f1d1d, roughness: 0.3 })
     );
-    bMesh.position.set(x + 2, y + 2.3, 0);
+    bMesh.position.set(x + 2.5, y + 2.4, 0);
     scene.add(bMesh);
-    bossEntity = { mesh: bMesh, hp: 3, maxHp: 3, centerX: x + 2, dir: -1, baseY: y + 2.3 };
+    bossEntity = { mesh: bMesh, hp: 3, maxHp: 3, centerX: x + 2.5, dir: -1, baseY: y + 2.4 };
     document.getElementById('boss-name-label').textContent = `👹 BOSS: ${world.boss.toUpperCase()}`;
     document.getElementById('boss-hp-bar').style.width = '100%';
     document.getElementById('boss-hud').style.display = 'block';
 
     portalMesh = new THREE.Mesh(
-      new THREE.TorusGeometry(1.7, 0.3, 14, 28),
+      new THREE.TorusGeometry(1.75, 0.3, 14, 28),
       new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 })
     );
-    portalMesh.position.set(x + 6.5, y + 2.4, 0);
+    portalMesh.position.set(x + 8.2, y + 2.4, 0);
     scene.add(portalMesh);
     return;
   }
 
   if (i > 0) {
-    if (i % 5 === 0) {
+    // Vehicle Pads: Airplane (i === 8), Motorbike Chase (i === 20), Parachute Drop (i === 34)
+    if (i === 8 || i === 20 || i === 34) {
+      const vType = i === 8 ? 'plane' : (i === 20 ? 'bike' : 'parachute');
+      const vColor = vType === 'plane' ? 0xfacc15 : (vType === 'bike' ? 0x38bdf8 : 0xf97316);
+      const vMesh = new THREE.Mesh(
+        new THREE.OctahedronGeometry(0.75),
+        new THREE.MeshStandardMaterial({ color: vColor, emissive: vColor, emissiveIntensity: 0.45 })
+      );
+      vMesh.position.set(x, y + 2.1, 0);
+      scene.add(vMesh);
+      collectibles.push({ mesh: vMesh, type: `vehicle_${vType}`, collected: false });
+    }
+
+    if (i % 6 === 0) {
       const spMesh = new THREE.Mesh(
         new THREE.CylinderGeometry(0.55, 0.65, 0.35, 14),
         new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0x831843 })
@@ -612,8 +757,25 @@ function spawnChunk(i, world, isBossArena = false) {
       springs.push({ mesh: spMesh });
     }
 
-    // Suspenseful 7D Orc encounters on select islands (e.g., 4th, 9th, 14th...)
-    if (i >= 4 && i % 5 === 4) {
+    // Dinosaurs & Rainforest Fearless Creatures
+    if (isRainforestZone || i % 11 === 6) {
+      const kind = (i % 2 === 0) ? 'dino' : 'creature';
+      const beast = createDinoOrCreatureMesh(kind);
+      beast.group.scale.setScalar(kind === 'dino' ? 1.35 : 0.95);
+      beast.group.position.set(x + 1.2, y + 0.65, 0);
+      scene.add(beast.group);
+      wildCreatures.push({
+        ...beast,
+        kind,
+        centerX: x,
+        range: Math.max(1.5, width * 0.36),
+        dir: -1,
+        alive: true
+      });
+    }
+
+    // 7D Orcs (including chasing pack during Motorbike zone i >= 20)
+    if ((i >= 4 && i % 5 === 4) || (i >= 20 && i <= 28 && i % 2 === 0)) {
       const orcRig = create7DOrcMesh();
       const orcScale = 0.95 + ((i + world.id) % 3) * 0.14;
       orcRig.orcGroup.scale.setScalar(orcScale);
@@ -623,12 +785,12 @@ function spawnChunk(i, world, isBossArena = false) {
         ...orcRig,
         centerX: x,
         baseY: y + 0.65,
-        range: Math.max(0.8, width * 0.34),
+        range: Math.max(1.0, width * 0.36),
         dir: -1,
         alive: true,
         alerted: false
       });
-    } else if (i % 3 === 0) {
+    } else if (i % 4 === 0) {
       const hzMesh = new THREE.Mesh(
         new THREE.DodecahedronGeometry(0.55),
         new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0x7f1d1d })
@@ -638,8 +800,8 @@ function spawnChunk(i, world, isBossArena = false) {
       hazards.push({ mesh: hzMesh, centerX: x, range: width * 0.35, dir: 1 });
     }
 
-    if (i % 7 === 0) {
-      const pType = (i % 14 === 0) ? 'jetpack' : 'magnet';
+    if (i % 9 === 0) {
+      const pType = (i % 18 === 0) ? 'jetpack' : 'magnet';
       const pMesh = new THREE.Mesh(
         new THREE.IcosahedronGeometry(0.52),
         new THREE.MeshStandardMaterial({ color: pType === 'jetpack' ? 0x38bdf8 : 0xa855f7, emissive: 0x3b82f6 })
@@ -657,7 +819,7 @@ function spawnChunk(i, world, isBossArena = false) {
         isStar ? new THREE.OctahedronGeometry(0.46) : new THREE.SphereGeometry(0.38, 12, 12),
         isStar ? starMat : foodMat
       );
-      cMesh.position.set(x + f * 1.15, y + 1.5, 0);
+      cMesh.position.set(x + f * 1.25, y + 1.5, 0);
       scene.add(cMesh);
       collectibles.push({ mesh: cMesh, type: isStar ? 'star' : 'food', collected: false });
     }
@@ -680,16 +842,16 @@ function initSession() {
   const world = state.selectedWorld;
 
   scene.background = new THREE.Color(world.sky);
-  scene.fog = new THREE.FogExp2(world.fog, 0.014);
+  scene.fog = new THREE.FogExp2(world.fog, 0.011);
 
   if (world.biome === 'sea' || world.biome === 'mountain' || world.biome === 'lava') {
     const seaColor = world.biome === 'lava' ? 0xdc2626 : (world.biome === 'sea' ? 0x0ea5e9 : 0x2563eb);
     seaPlane = new THREE.Mesh(
-      new THREE.PlaneGeometry(800, 140),
+      new THREE.PlaneGeometry(1400, 160),
       new THREE.MeshStandardMaterial({ color: seaColor, transparent: true, opacity: 0.72 })
     );
     seaPlane.rotation.x = -Math.PI / 2;
-    seaPlane.position.set(220, -5.5, -8);
+    seaPlane.position.set(380, -5.5, -8);
     scene.add(seaPlane);
   }
 
@@ -698,6 +860,11 @@ function initSession() {
   state.hearts = 3;
   state.hasShield = state.megaBoostStart;
   shieldGroup.visible = state.hasShield;
+  state.vehicleMode = 'foot';
+  state.vehicleTimer = 0;
+  planeGroup.visible = false;
+  bikeGroup.visible = false;
+  chuteGroup.visible = false;
   state.jetpackTimer = 0;
   state.magnetTimer = 0;
   state.orcGrowlCooldown = 0;
@@ -714,7 +881,8 @@ function initSession() {
   state.vx = 0; state.vy = 0;
   state.chunkIndex = 0;
 
-  const totalChunks = state.mode === 'adventure' ? 24 : 26;
+  // Expanded long quest length (72 chunks across flight, motorbike chase, parachute drop & rainforest)
+  const totalChunks = state.mode === 'adventure' ? 72 : 34;
   for (let i = 0; i < totalChunks; i++) {
     spawnChunk(i, world, state.mode === 'adventure' && i === totalChunks - 1);
   }
@@ -768,7 +936,8 @@ function updateHUD() {
   document.getElementById('hud-stars').textContent = state.stars;
   document.getElementById('hud-food').textContent = state.food;
   document.getElementById('hud-dist').textContent = `${state.distance}m`;
-  const badges = (state.hasShield ? ' 🛡️' : '') + (state.jetpackTimer > 0 ? ' 🚀' : '') + (state.magnetTimer > 0 ? ' 🧲' : '');
+  const vBadge = state.vehicleMode === 'plane' ? ' ✈️' : (state.vehicleMode === 'bike' ? ' 🏍️' : (state.vehicleMode === 'parachute' ? ' 🪂' : ''));
+  const badges = (state.hasShield ? ' 🛡️' : '') + vBadge + (state.jetpackTimer > 0 ? ' 🚀' : '') + (state.magnetTimer > 0 ? ' 🧲' : '');
   document.getElementById('hud-hearts').textContent = '❤️'.repeat(Math.max(0, state.hearts)) + badges;
 }
 
@@ -777,6 +946,16 @@ const keys = { left: false, right: false };
 function triggerJump() {
   if (!state.playing) return;
   const hero = state.squad[state.activePlayerIdx]?.hero || state.selectedHero;
+  if (state.vehicleMode === 'plane') {
+    state.vy = 0.26;
+    playSound(560, 'sine', 0.12, 860, 0.1);
+    return;
+  }
+  if (state.vehicleMode === 'parachute') {
+    state.vy = 0.06;
+    playSound(420, 'triangle', 0.12, 620, 0.09);
+    return;
+  }
   if (state.jetpackTimer > 0) {
     state.vy = 0.34;
     playSound(520, 'sawtooth', 0.1, 840, 0.09);
@@ -794,8 +973,8 @@ function triggerJump() {
 }
 function triggerDash() {
   if (!state.playing || state.dashCooldown > 0) return;
-  state.vx = (keys.left ? -1 : 1) * 0.55;
-  state.dashCooldown = 42;
+  state.vx = (keys.left ? -1 : 1) * 0.58;
+  state.dashCooldown = 40;
   playSound(650, 'square', 0.12, 260, 0.1);
   buzz(30);
   spawnParticles(playerGroup.position, 0x38bdf8, 12);
@@ -911,6 +1090,13 @@ function animate() {
   if (shieldGroup.visible) {
     shieldRing.rotation.z += 0.04;
   }
+  if (state.vehicleMode === 'plane') {
+    planeProp.rotation.x += 0.55;
+  }
+  if (state.vehicleMode === 'bike') {
+    frontWheel.rotation.z -= 0.35;
+    rearWheel.rotation.z -= 0.35;
+  }
 
   if (state.playing) {
     const hero = state.squad[state.activePlayerIdx]?.hero || state.selectedHero;
@@ -918,23 +1104,34 @@ function animate() {
     if (state.orcGrowlCooldown > 0) state.orcGrowlCooldown--;
     if (state.jetpackTimer > 0) { state.jetpackTimer--; if (state.jetpackTimer === 0) updateHUD(); }
     if (state.magnetTimer > 0) { state.magnetTimer--; if (state.magnetTimer === 0) updateHUD(); }
+    if (state.vehicleTimer > 0) {
+      state.vehicleTimer--;
+      if (state.vehicleTimer === 0) {
+        state.vehicleMode = 'foot';
+        planeGroup.visible = false;
+        bikeGroup.visible = false;
+        chuteGroup.visible = false;
+        updateHUD();
+      }
+    }
 
-    if (state.mode === 'endurance' && playerGroup.position.x + 65 > state.generatedUntilX) {
+    if (state.mode === 'endurance' && playerGroup.position.x + 75 > state.generatedUntilX) {
       const dynamicWorld = WORLDS[Math.floor(state.chunkIndex / 14) % WORLDS.length];
       spawnChunk(state.chunkIndex, dynamicWorld, false);
     }
 
-    if (Math.abs(state.vx) <= hero.speed * 1.1) {
-      if (keys.left) { state.vx = -hero.speed; state.facing = -1; }
-      else if (keys.right) { state.vx = hero.speed; state.facing = 1; }
-      else state.vx *= 0.78;
+    const speedBoost = state.vehicleMode === 'bike' ? 1.55 : (state.vehicleMode === 'plane' ? 1.35 : 1.0);
+    if (Math.abs(state.vx) <= hero.speed * speedBoost * 1.15) {
+      if (keys.left) { state.vx = -hero.speed * speedBoost; state.facing = -1; }
+      else if (keys.right) { state.vx = hero.speed * speedBoost; state.facing = 1; }
+      else state.vx *= 0.8;
     } else {
       state.vx *= 0.9;
     }
 
     playerGroup.rotation.y = state.facing === 1 ? 0 : Math.PI;
 
-    if (Math.abs(state.vx) > 0.02) {
+    if (Math.abs(state.vx) > 0.02 && state.vehicleMode === 'foot') {
       const swing = Math.sin(clockTick * 3.2) * 0.65;
       leftLeg.rotation.z = swing;
       rightLeg.rotation.z = -swing;
@@ -946,7 +1143,13 @@ function animate() {
     }
 
     playerGroup.position.x += state.vx;
-    state.vy -= (state.jetpackTimer > 0 ? 0.008 : 0.016);
+    if (state.vehicleMode === 'parachute') {
+      state.vy = Math.max(state.vy - 0.003, -0.085);
+    } else if (state.vehicleMode === 'plane') {
+      state.vy = Math.max(state.vy - 0.005, -0.14);
+    } else {
+      state.vy -= (state.jetpackTimer > 0 ? 0.008 : 0.016);
+    }
     playerGroup.position.y += state.vy;
     state.distance = Math.max(state.distance, Math.floor(playerGroup.position.x));
 
@@ -963,6 +1166,11 @@ function animate() {
           state.shakeTime = 0.2;
           playSound(110, 'sawtooth', 0.15, 55, 0.16);
           buzz(35);
+        }
+        if (state.vehicleMode === 'parachute') {
+          state.vehicleMode = 'foot';
+          chuteGroup.visible = false;
+          updateHUD();
         }
         playerGroup.position.y = topY;
         state.vy = 0;
@@ -981,7 +1189,51 @@ function animate() {
       }
     });
 
-    // 7D Orc Patrol, Suspense Warning & Stomp/Giant Smash Combat
+    // Dinosaurs & Fearless Rainforest Creatures
+    wildCreatures.forEach(wc => {
+      if (!wc.alive) return;
+      wc.group.position.x += wc.dir * (wc.kind === 'dino' ? 0.055 : 0.072);
+      if (Math.abs(wc.group.position.x - wc.centerX) > wc.range) wc.dir *= -1;
+      wc.group.rotation.y = wc.dir === -1 ? 0 : Math.PI;
+      const wSwing = Math.sin(clockTick * 3.5) * 0.5;
+      wc.legA.rotation.z = wSwing;
+      wc.legB.rotation.z = -wSwing;
+
+      if (playerGroup.position.distanceTo(wc.group.position) < 1.45 * state.scale) {
+        if (state.vy < -0.04 || state.scale >= 2.2 || state.vehicleMode === 'bike' || state.vehicleMode === 'plane' || state.dashCooldown > 25) {
+          wc.alive = false;
+          wc.group.visible = false;
+          state.vy = Math.max(state.vy, 0.34);
+          state.stars += 5;
+          state.food += 4;
+          state.shakeTime = 0.24;
+          playSound(190, 'square', 0.2, 85, 0.16);
+          buzz(45);
+          spawnParticles(wc.group.position, 0x4ade80, 16);
+          updateGrowth(true);
+        } else if (state.hasShield) {
+          state.hasShield = false;
+          shieldGroup.visible = false;
+          wc.alive = false;
+          wc.group.visible = false;
+          playSound(300, 'triangle', 0.2, 150);
+        } else {
+          wc.alive = false;
+          wc.group.visible = false;
+          state.hearts--;
+          state.food = Math.max(0, state.food - 10);
+          updateGrowth(false);
+          playSound(160, 'sawtooth', 0.24, 80);
+          buzz(65);
+          if (state.hearts <= 0) {
+            finishTurn(`🦖 ${state.squad[state.activePlayerIdx].name.toUpperCase()} OVERWHELMED IN THE WILDS!`);
+          }
+        }
+        updateHUD();
+      }
+    });
+
+    // 7D Orc Patrol, Chase & Stomp/Giant Smash Combat
     let nearbyOrc = false;
     orcs.forEach(orc => {
       if (!orc.alive) return;
@@ -989,7 +1241,7 @@ function animate() {
       const dxToPlayer = playerGroup.position.x - orc.orcGroup.position.x;
       const dist = playerGroup.position.distanceTo(orc.orcGroup.position);
 
-      if (Math.abs(dxToPlayer) < 9.5) {
+      if (Math.abs(dxToPlayer) < 10.5) {
         nearbyOrc = true;
         if (!orc.alerted && state.orcGrowlCooldown <= 0) {
           orc.alerted = true;
@@ -1000,12 +1252,12 @@ function animate() {
         }
       }
 
-      // Lunge toward player when close, otherwise patrol island
-      if (Math.abs(dxToPlayer) < 6.5) {
+      if (Math.abs(dxToPlayer) < 8.5) {
         orc.dir = dxToPlayer >= 0 ? 1 : -1;
-        orc.orcGroup.position.x += orc.dir * 0.068;
+        const chaseSpeed = state.vehicleMode === 'bike' ? 0.115 : 0.072;
+        orc.orcGroup.position.x += orc.dir * chaseSpeed;
       } else {
-        orc.orcGroup.position.x += orc.dir * 0.042;
+        orc.orcGroup.position.x += orc.dir * 0.045;
         if (Math.abs(orc.orcGroup.position.x - orc.centerX) > orc.range) orc.dir *= -1;
       }
       orc.orcGroup.rotation.y = orc.dir === -1 ? 0 : Math.PI;
@@ -1014,8 +1266,7 @@ function animate() {
       orc.oLegR.rotation.z = -stepSwing;
 
       if (dist < 1.35 * state.scale) {
-        // Stomp from above, dash, or Giant 2.2x+ body slam defeats the 7D Orc!
-        if (state.vy < -0.04 || state.scale >= 2.2 || state.dashCooldown > 25) {
+        if (state.vy < -0.04 || state.scale >= 2.2 || state.vehicleMode === 'bike' || state.dashCooldown > 25) {
           orc.alive = false;
           orc.orcGroup.visible = false;
           state.vy = Math.max(state.vy, 0.36);
@@ -1057,7 +1308,7 @@ function animate() {
       if (Math.abs(hz.mesh.position.x - hz.centerX) > hz.range) hz.dir *= -1;
 
       if (hz.mesh.visible && playerGroup.position.distanceTo(hz.mesh.position) < 0.95 * state.scale) {
-        if (state.scale >= 2.2) {
+        if (state.scale >= 2.2 || state.vehicleMode === 'bike') {
           hz.mesh.visible = false;
           state.stars += 3;
           state.shakeTime = 0.25;
@@ -1093,7 +1344,7 @@ function animate() {
 
       const distToBoss = playerGroup.position.distanceTo(bossEntity.mesh.position);
       if (distToBoss < 2.1 * state.scale) {
-        if (state.vy < -0.05 || state.scale >= 2.2) {
+        if (state.vy < -0.05 || state.scale >= 2.2 || state.vehicleMode === 'bike') {
           bossEntity.hp--;
           state.vy = 0.42;
           state.shakeTime = 0.3;
@@ -1130,7 +1381,7 @@ function animate() {
       c.mesh.rotation.y += 0.06;
       const dist = playerGroup.position.distanceTo(c.mesh.position);
       if (dist < magnetRange) c.mesh.position.lerp(playerGroup.position, 0.28);
-      if (dist < 1.05 * state.scale) {
+      if (dist < 1.15 * state.scale) {
         c.collected = true;
         c.mesh.visible = false;
         if (c.type === 'food') {
@@ -1150,6 +1401,9 @@ function animate() {
           state.magnetTimer = 420;
           playSound(700, 'sine', 0.3, 1100);
           spawnParticles(c.mesh.position, 0xa855f7, 16);
+        } else if (c.type && c.type.startsWith('vehicle_')) {
+          setVehicleMode(c.type.replace('vehicle_', ''), 460);
+          spawnParticles(c.mesh.position, 0xfacc15, 18);
         }
         buzz(15);
         updateHUD();
