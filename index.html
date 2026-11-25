@@ -151,7 +151,7 @@
 <!-- HUD -->
 <div id="hud">
   <div class="hud-box">
-    <div class="hud-title" id="hud-player-label">P1: Osa • LVL 1</div>
+    <div class="hud-title" id="hud-player-label">P1: Kael Red • LVL 1</div>
     <div class="hud-val" id="hud-stage">1.0x TINY CUB</div>
     <div id="growth-bar-wrap"><div id="growth-bar"></div></div>
     <div class="hearts" id="hud-hearts">❤️❤️❤️</div>
@@ -209,7 +209,7 @@
       <div class="player-slot"><span>🌟 P4:</span><input type="text" id="p4-name" maxlength="14" placeholder="Optional Player 4" /></div>
     </div>
 
-    <div class="section-label">3. Choose Active 3D Hero</div>
+    <div class="section-label">3. Choose Active 3D Hero (From Kiddo Kingdom Squad)</div>
     <div class="hero-grid" id="hero-grid"></div>
 
     <div class="section-label">4. Select Starting Level & Scene (Advances Automatically Each Level!)</div>
@@ -233,12 +233,28 @@
 </div>
 
 <script>
-// ==================== 1. HEROES & 10 DISTINCT LEVEL ARCHITECTURES ====================
+// ==================== 1. HEROES (ARTWORK SQUAD) & 10 DISTINCT LEVEL ARCHITECTURES ====================
 const HEROES = [
-  { id: 'osa', name: 'Osa Hero', icon: '🐿️', shirt: 0xe11d48, overalls: 0x2563eb, cap: 0xdc2626, skin: 0xfdba74, perk: 'Triple-Jump', jump: 0.35, speed: 0.17, maxJumps: 3 },
-  { id: 'blaze', name: 'Blaze Red', icon: '🐲', shirt: 0xf97316, overalls: 0x1d4ed8, cap: 0xef4444, skin: 0xfac898, perk: '+10 Start Food', jump: 0.33, speed: 0.16, maxJumps: 2, startFood: 10 },
-  { id: 'luna', name: 'Luna Star', icon: '🐱', shirt: 0xa855f7, overalls: 0x3b82f6, cap: 0x9333ea, skin: 0xfed7aa, perk: 'Super High Jump', jump: 0.39, speed: 0.17, maxJumps: 2 },
-  { id: 'bolt', name: 'Bolt Turbo', icon: '🤖', shirt: 0x16a34a, overalls: 0x0284c7, cap: 0x22c55e, skin: 0xfdba74, perk: 'Turbo Dash Speed', jump: 0.33, speed: 0.21, maxJumps: 2 }
+  {
+    id: 'kael_red', name: 'Kael Red', icon: '🦸‍♂️',
+    suit: 0xdc2626, trim: 0xfacc15, cape: 0xb91c1c, hair: 0x291810, skin: 0x9a5b34,
+    style: 'curly_cape', perk: 'Triple-Jump', jump: 0.35, speed: 0.17, maxJumps: 3
+  },
+  {
+    id: 'violet_star', name: 'Violet Star', icon: '🦸‍♀️',
+    suit: 0x7e22ce, trim: 0xfacc15, cape: 0x6b21a8, hair: 0x9333ea, skin: 0xf1b690,
+    style: 'long_hair', perk: '+10 Start Food', jump: 0.33, speed: 0.16, maxJumps: 2, startFood: 10
+  },
+  {
+    id: 'max_goggles', name: 'Max Goggles', icon: '🥽',
+    suit: 0x2563eb, trim: 0xfacc15, cape: 0x1d4ed8, hair: 0x92400e, skin: 0xe8a87c,
+    style: 'goggles', perk: 'Super High Jump', jump: 0.39, speed: 0.17, maxJumps: 2
+  },
+  {
+    id: 'nova_pink', name: 'Nova Pink', icon: '⭐',
+    suit: 0xdb2777, trim: 0xfacc15, cape: 0xbe185d, hair: 0x3b1f14, skin: 0xe6a67c,
+    style: 'ponytail', perk: 'Turbo Dash Speed', jump: 0.33, speed: 0.21, maxJumps: 2
+  }
 ];
 
 const LEVEL_BLUEPRINTS = [
@@ -346,7 +362,7 @@ window.showRewardedAd = function(onRewardEarned) {
   }
 };
 
-// ==================== 4. THREE.JS 3D SCENE, MOVIE MARIO HERO, MOVIE 7D ORCS & VEHICLES ====================
+// ==================== 4. THREE.JS 3D SCENE, HERO SQUAD, MOVIE 7D ORCS & VEHICLES ====================
 const canvas = document.getElementById('game-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
@@ -363,81 +379,102 @@ dirLight.position.set(14, 28, 18);
 dirLight.castShadow = true;
 scene.add(dirLight);
 
-// Expressive Super-Mario Inspired 3D Character Rig
+// Kiddo Kingdom Superhero Kid 3D Character Rig
 const playerGroup = new THREE.Group();
 
-const shirtMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, roughness: 0.35 });
-const overallsMat = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.45 });
-const capMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.3 });
-const skinMat = new THREE.MeshStandardMaterial({ color: 0xfdba74, roughness: 0.5 });
+const suitMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.35 });
+const trimMat = new THREE.MeshStandardMaterial({ color: 0xfacc15, emissive: 0xa16207, emissiveIntensity: 0.25, roughness: 0.3 });
+const capeMat = new THREE.MeshStandardMaterial({ color: 0xb91c1c, roughness: 0.45, side: THREE.DoubleSide });
+const hairMat = new THREE.MeshStandardMaterial({ color: 0x291810, roughness: 0.75 });
+const skinMat = new THREE.MeshStandardMaterial({ color: 0x9a5b34, roughness: 0.5 });
 
-const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.78, 0.76), shirtMat);
+const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.8, 0.76), suitMat);
 torsoMesh.position.y = 0.84;
-const overallsMesh = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.52, 0.8), overallsMat);
-overallsMesh.position.y = 0.68;
+
+const chestStarMesh = new THREE.Mesh(new THREE.OctahedronGeometry(0.24, 0), trimMat);
+chestStarMesh.scale.set(0.35, 1.05, 1.05);
+chestStarMesh.position.set(0.46, 0.92, 0);
+
+const beltMesh = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.14, 0.8), trimMat);
+beltMesh.position.y = 0.54;
+
+const capeMesh = new THREE.Mesh(new THREE.BoxGeometry(0.1, 1.15, 0.88), capeMat);
+capeMesh.position.set(-0.52, 0.78, 0);
+capeMesh.rotation.z = 0.24;
 
 const headGroup = new THREE.Group();
 headGroup.position.set(0, 1.56, 0);
 
 const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.48, 22, 22), skinMat);
 const eyeMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2 });
-const browMat = new THREE.MeshStandardMaterial({ color: 0x3b1807, roughness: 0.6 });
-const cheekMat = new THREE.MeshStandardMaterial({ color: 0xf87171, roughness: 0.5, transparent: true, opacity: 0.55 });
+const shineMat = new THREE.MeshBasicMaterial({ color: 0xffffff });
+const browMat = new THREE.MeshStandardMaterial({ color: 0x1f120c, roughness: 0.6 });
 
-const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.082, 10, 10), eyeMat);
-leftEye.position.set(0.32, 0.08, 0.26);
-const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.082, 10, 10), eyeMat);
-rightEye.position.set(0.32, 0.08, -0.26);
+const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 10), eyeMat);
+leftEye.position.set(0.32, 0.08, 0.25);
+const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.085, 10, 10), eyeMat);
+rightEye.position.set(0.32, 0.08, -0.25);
+
+const leftEyeShine = new THREE.Mesh(new THREE.SphereGeometry(0.032, 8, 8), shineMat);
+leftEyeShine.position.set(0.38, 0.12, 0.27);
+const rightEyeShine = new THREE.Mesh(new THREE.SphereGeometry(0.032, 8, 8), shineMat);
+rightEyeShine.position.set(0.38, 0.12, -0.27);
 
 const leftBrow = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.055, 0.19), browMat);
-leftBrow.position.set(0.36, 0.2, 0.26);
+leftBrow.position.set(0.36, 0.2, 0.25);
 const rightBrow = new THREE.Mesh(new THREE.BoxGeometry(0.11, 0.055, 0.19), browMat);
-rightBrow.position.set(0.36, 0.2, -0.26);
-
-const leftCheek = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), cheekMat);
-leftCheek.position.set(0.28, -0.06, 0.36);
-const rightCheek = new THREE.Mesh(new THREE.SphereGeometry(0.07, 10, 10), cheekMat);
-rightCheek.position.set(0.28, -0.06, -0.36);
+rightBrow.position.set(0.36, 0.2, -0.25);
 
 const leftEar = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), skinMat);
 leftEar.position.set(0.02, 0.02, 0.47);
 const rightEar = new THREE.Mesh(new THREE.SphereGeometry(0.11, 10, 10), skinMat);
 rightEar.position.set(0.02, 0.02, -0.47);
 
-const noseMesh = new THREE.Mesh(new THREE.SphereGeometry(0.155, 14, 14), skinMat);
-noseMesh.position.set(0.49, -0.01, 0);
+const noseMesh = new THREE.Mesh(new THREE.SphereGeometry(0.12, 12, 12), skinMat);
+noseMesh.position.set(0.47, -0.01, 0);
 
-const mustacheL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.085, 0.23), browMat);
-mustacheL.position.set(0.44, -0.14, 0.11);
-mustacheL.rotation.y = 0.22;
-const mustacheR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.085, 0.23), browMat);
-mustacheR.position.set(0.44, -0.14, -0.11);
-mustacheR.rotation.y = -0.22;
+// Hero Hair & Accessory Variants (Curly Afro, Violet Long Hair, Blue Goggles, Pink Ponytail)
+const curlyHairGroup = new THREE.Group();
+const hairCore = new THREE.Mesh(new THREE.SphereGeometry(0.51, 18, 16, 0, Math.PI * 2, 0, Math.PI * 0.65), hairMat);
+hairCore.position.set(-0.04, 0.14, 0);
+curlyHairGroup.add(hairCore);
+for (let c = 0; c < 8; c++) {
+  const ang = (c / 8) * Math.PI * 2;
+  const puff = new THREE.Mesh(new THREE.SphereGeometry(0.16, 10, 10), hairMat);
+  puff.position.set(-0.06 + Math.cos(ang) * 0.36, 0.34, Math.sin(ang) * 0.36);
+  curlyHairGroup.add(puff);
+}
 
-const capDome = new THREE.Mesh(new THREE.SphereGeometry(0.51, 22, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), capMat);
-capDome.position.set(-0.02, 0.09, 0);
-const capBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.55, 0.55, 0.06, 16), capMat);
-capBrim.position.set(0.38, 0.15, 0);
-const capBadge = new THREE.Mesh(
-  new THREE.CylinderGeometry(0.14, 0.14, 0.05, 16),
-  new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfde047, emissiveIntensity: 0.25 })
-);
-capBadge.rotation.z = Math.PI / 2;
-capBadge.position.set(0.48, 0.24, 0);
+const longHairMesh = new THREE.Mesh(new THREE.BoxGeometry(0.42, 0.92, 0.84), hairMat);
+longHairMesh.position.set(-0.34, -0.16, 0);
+
+const gogglesGroup = new THREE.Group();
+const goggleStrap = new THREE.Mesh(new THREE.BoxGeometry(0.98, 0.14, 0.98), new THREE.MeshStandardMaterial({ color: 0x0f172a }));
+goggleStrap.position.set(0.02, 0.12, 0);
+const lensMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.45, roughness: 0.15 });
+const lensL = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.22, 0.34), lensMat);
+lensL.position.set(0.44, 0.12, 0.21);
+const lensR = new THREE.Mesh(new THREE.BoxGeometry(0.14, 0.22, 0.34), lensMat);
+lensR.position.set(0.44, 0.12, -0.21);
+gogglesGroup.add(goggleStrap, lensL, lensR);
+
+const ponytailMesh = new THREE.Mesh(new THREE.ConeGeometry(0.2, 0.68, 12), hairMat);
+ponytailMesh.position.set(-0.56, 0.12, 0);
+ponytailMesh.rotation.z = 0.85;
 
 headGroup.add(
-  headMesh, leftEye, rightEye, leftBrow, rightBrow,
-  leftCheek, rightCheek, leftEar, rightEar,
-  noseMesh, mustacheL, mustacheR, capDome, capBrim, capBadge
+  headMesh, leftEye, rightEye, leftEyeShine, rightEyeShine,
+  leftBrow, rightBrow, leftEar, rightEar, noseMesh,
+  curlyHairGroup, longHairMesh, gogglesGroup, ponytailMesh
 );
 
 const armGeo = new THREE.BoxGeometry(0.25, 0.52, 0.26);
-const leftArm = new THREE.Mesh(armGeo, shirtMat); leftArm.position.set(0, 0.85, 0.58);
-const rightArm = new THREE.Mesh(armGeo, shirtMat); rightArm.position.set(0, 0.85, -0.58);
+const leftArm = new THREE.Mesh(armGeo, suitMat); leftArm.position.set(0, 0.85, 0.58);
+const rightArm = new THREE.Mesh(armGeo, suitMat); rightArm.position.set(0, 0.85, -0.58);
 
 const legGeo = new THREE.BoxGeometry(0.3, 0.44, 0.34);
-const leftLeg = new THREE.Mesh(legGeo, overallsMat); leftLeg.position.set(0, 0.22, 0.24);
-const rightLeg = new THREE.Mesh(legGeo, overallsMat); rightLeg.position.set(0, 0.22, -0.24);
+const leftLeg = new THREE.Mesh(legGeo, suitMat); leftLeg.position.set(0, 0.22, 0.24);
+const rightLeg = new THREE.Mesh(legGeo, suitMat); rightLeg.position.set(0, 0.22, -0.24);
 
 // 3D Airplane Rig
 const planeGroup = new THREE.Group();
@@ -512,7 +549,11 @@ shieldRing.position.y = 1.0;
 shieldGroup.add(shieldDome, shieldRing);
 shieldGroup.visible = false;
 
-playerGroup.add(torsoMesh, overallsMesh, headGroup, leftArm, rightArm, leftLeg, rightLeg, planeGroup, bikeGroup, chuteGroup, shieldGroup);
+playerGroup.add(
+  torsoMesh, chestStarMesh, beltMesh, capeMesh, headGroup,
+  leftArm, rightArm, leftLeg, rightLeg,
+  planeGroup, bikeGroup, chuteGroup, shieldGroup
+);
 scene.add(playerGroup);
 
 // Movie-Style 7D Orc 3D Builder
@@ -688,6 +729,7 @@ HEROES.forEach((h, idx) => {
     document.querySelectorAll('.hero-card').forEach(c => c.classList.remove('active'));
     card.classList.add('active');
     state.selectedHero = h;
+    applyHeroAppearance(h);
     playSound(520, 'triangle', 0.09);
   };
   heroGrid.appendChild(card);
@@ -727,7 +769,7 @@ function buildSquadFromInputs() {
   ].filter(Boolean);
   state.squad = names.map((n, i) => ({
     name: n,
-    hero: HEROES[i % HEROES.length],
+    hero: i === 0 ? state.selectedHero : HEROES[i % HEROES.length],
     bestStars: 0,
     bestDist: 0,
     maxScale: 1.0
@@ -981,10 +1023,17 @@ function spawnChunk(i, bp, isBossArena = false) {
 }
 
 function applyHeroAppearance(hero) {
-  shirtMat.color.setHex(hero.shirt);
-  overallsMat.color.setHex(hero.overalls);
-  capMat.color.setHex(hero.cap);
+  suitMat.color.setHex(hero.suit);
+  trimMat.color.setHex(hero.trim);
+  capeMat.color.setHex(hero.cape);
+  hairMat.color.setHex(hero.hair);
   skinMat.color.setHex(hero.skin);
+
+  curlyHairGroup.visible = hero.style === 'curly_cape';
+  capeMesh.visible = hero.style === 'curly_cape';
+  longHairMesh.visible = hero.style === 'long_hair';
+  gogglesGroup.visible = hero.style === 'goggles';
+  ponytailMesh.visible = hero.style === 'ponytail';
 }
 
 function initSession() {
@@ -1316,6 +1365,9 @@ function animate() {
 
     playerGroup.rotation.y = state.facing === 1 ? 0 : Math.PI;
     headGroup.rotation.z = Math.max(-0.25, Math.min(0.25, -state.vy * 0.45));
+    if (capeMesh.visible) {
+      capeMesh.rotation.z = 0.24 + Math.sin(clockTick * 4.2) * 0.14 + Math.abs(state.vx) * 0.35;
+    }
 
     if (Math.abs(state.vx) > 0.02 && state.vehicleMode === 'foot') {
       const swimMult = bp.key === 'swimming_ocean' ? 0.55 : 1.0;
