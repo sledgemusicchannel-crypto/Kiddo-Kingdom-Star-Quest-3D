@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-  <title>Kiddo Kingdom: Star Quest 3D — Boss & Endurance Edition | Apex Mobility System</title>
+  <title>Kiddo Kingdom: Star Quest 3D — 7D Orcs, Boss & Endurance Edition | Apex Mobility System</title>
   <style>
     * { box-sizing: border-box; user-select: none; -webkit-user-select: none; margin: 0; padding: 0; }
     body, html { width: 100%; height: 100%; overflow: hidden; background: #050811; font-family: 'Segoe UI', system-ui, sans-serif; color: #fff; }
@@ -25,8 +25,15 @@
     #growth-bar-wrap { width: 135px; height: 9px; background: rgba(255,255,255,0.16); border-radius: 99px; overflow: hidden; margin-top: 5px; }
     #growth-bar { width: 10%; height: 100%; background: linear-gradient(90deg, #4ade80, #facc15, #f43f5e); transition: width 0.2s; }
     .hearts { font-size: 14px; letter-spacing: 2px; margin-top: 3px; }
-    #boss-hud {
+    #orc-alert {
       position: fixed; top: 82px; left: 50%; transform: translateX(-50%); z-index: 10;
+      display: none; background: rgba(69, 10, 10, 0.92); border: 2px solid #f87171;
+      border-radius: 14px; padding: 6px 16px; text-align: center; pointer-events: none;
+      font-size: 12px; font-weight: 900; color: #fecaca; letter-spacing: 0.5px;
+      box-shadow: 0 0 20px rgba(239, 68, 68, 0.45);
+    }
+    #boss-hud {
+      position: fixed; top: 116px; left: 50%; transform: translateX(-50%); z-index: 10;
       display: none; background: rgba(127, 29, 29, 0.9); border: 2px solid #fca5a5;
       border-radius: 14px; padding: 6px 16px; text-align: center; pointer-events: none;
     }
@@ -144,6 +151,9 @@
   </div>
 </div>
 
+<!-- 7D ORC SUSPENSE ALERT -->
+<div id="orc-alert">⚔️ 7D ORC NEARBY — STOMP OR GROW 2.2x+ TO SMASH!</div>
+
 <!-- BOSS HEALTH BAR -->
 <div id="boss-hud">
   <div style="font-size:12px; font-weight:900; color:#fef08a;" id="boss-name-label">👹 WORLD BOSS</div>
@@ -167,7 +177,7 @@
 <div class="overlay" id="start-screen">
   <div class="panel">
     <h1>🌟 KIDDO KINGDOM: STAR QUEST 3D</h1>
-    <div class="subtitle">7D Multi-Biome Worlds • Feed & Grow to 3.0x Giant • Boss Battles & 1–4 Player Squad!</div>
+    <div class="subtitle">7D Orc Encounters & Multi-Biome Worlds • Feed & Grow to 3.0x Giant • 1–4 Player Squad!</div>
 
     <div class="section-label">1. Select Game Mode</div>
     <div class="mode-row">
@@ -189,7 +199,7 @@
     <div class="section-label">4. Select 3D Biome World</div>
     <div class="world-grid" id="world-grid"></div>
 
-    <button class="btn-ad" id="btn-mega-start">🎬 Watch Short Ad: Start as MEGA TITAN (2.2x Giant + Shield)!</button>
+    <button class="btn-ad" id="btn-mega-start">🎬 Watch Ad: Grow to MEGA TITAN (2.2x) + Equip Armor Shield!</button>
     <button class="btn-primary" id="btn-play">▶ LAUNCH 3D ADVENTURE</button>
     <div class="brand-foot">Apex Mobility System • Offline & Family-Safe 3D Engine</div>
   </div>
@@ -201,7 +211,7 @@
     <h1 id="win-title">🎉 STAGE COMPLETE!</h1>
     <div class="subtitle" id="win-summary">Awesome run!</div>
     <div class="scoreboard" id="squad-scoreboard"></div>
-    <button class="btn-ad" id="btn-double-stars">🎬 Watch Ad: +20 Bonus Stars & Full Hearts!</button>
+    <button class="btn-ad" id="btn-double-stars">🎬 Watch Ad: Grow Bigger + Armor Shield + 20 Stars!</button>
     <button class="btn-primary" id="btn-next-turn">NEXT PLAYER / NEXT WORLD ➔</button>
   </div>
 </div>
@@ -209,10 +219,10 @@
 <script>
 // ==================== 1. HEROES & 10 BIOME WORLDS ====================
 const HEROES = [
-  { id: 'osa', name: 'Osa Squirrel', icon: '🐿️', color: 0xf97316, accent: 0xfde047, perk: 'Triple-Jump', jump: 0.35, speed: 0.17, maxJumps: 3 },
-  { id: 'blaze', name: 'Blaze Dragon', icon: '🐲', color: 0xef4444, accent: 0xfacc15, perk: '+10 Start Food', jump: 0.33, speed: 0.16, maxJumps: 2, startFood: 10 },
-  { id: 'luna', name: 'Luna Star Cat', icon: '🐱', color: 0xa855f7, accent: 0x38bdf8, perk: 'Super High Jump', jump: 0.39, speed: 0.17, maxJumps: 2 },
-  { id: 'bolt', name: 'Bolt Robo-Kid', icon: '🤖', color: 0x06b6d4, accent: 0x4ade80, perk: 'Turbo Dash Speed', jump: 0.33, speed: 0.21, maxJumps: 2 }
+  { id: 'osa', name: 'Osa Hero', icon: '🐿️', shirt: 0xe11d48, overalls: 0x2563eb, cap: 0xdc2626, skin: 0xfdba74, perk: 'Triple-Jump', jump: 0.35, speed: 0.17, maxJumps: 3 },
+  { id: 'blaze', name: 'Blaze Red', icon: '🐲', shirt: 0xf97316, overalls: 0x1d4ed8, cap: 0xef4444, skin: 0xfac898, perk: '+10 Start Food', jump: 0.33, speed: 0.16, maxJumps: 2, startFood: 10 },
+  { id: 'luna', name: 'Luna Star', icon: '🐱', shirt: 0xa855f7, overalls: 0x3b82f6, cap: 0x9333ea, skin: 0xfed7aa, perk: 'Super High Jump', jump: 0.39, speed: 0.17, maxJumps: 2 },
+  { id: 'bolt', name: 'Bolt Turbo', icon: '🤖', shirt: 0x16a34a, overalls: 0x0284c7, cap: 0x22c55e, skin: 0xfdba74, perk: 'Turbo Dash Speed', jump: 0.33, speed: 0.21, maxJumps: 2 }
 ];
 
 const WORLDS = [
@@ -265,53 +275,157 @@ window.showRewardedAd = function(onRewardEarned) {
     window.onAndroidAdReward = onRewardEarned;
     window.AndroidAds.showRewarded();
   } else {
-    alert('🎬 Family-Safe Rewarded Ad Complete! Bonus Unlocked!');
+    alert('🎬 Rewarded Ad Complete! Mega Size + Armor Shield Activated!');
     onRewardEarned();
   }
 };
 
-// ==================== 4. THREE.JS 3D SCENE & ANIMATED CHARACTER ====================
+// ==================== 4. THREE.JS 3D SCENE, MARIO HERO & 7D ORCS ====================
 const canvas = document.getElementById('game-canvas');
 const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
 renderer.setSize(window.innerWidth, window.innerHeight);
 renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.shadowMap.enabled = true;
 
 const scene = new THREE.Scene();
 const camera = new THREE.PerspectiveCamera(58, window.innerWidth / window.innerHeight, 0.1, 280);
 camera.position.set(0, 5, 15);
 
-scene.add(new THREE.HemisphereLight(0xffffff, 0x1e293b, 1.15));
-const dirLight = new THREE.DirectionalLight(0xffffff, 0.95);
+scene.add(new THREE.HemisphereLight(0xffffff, 0x1e293b, 1.2));
+const dirLight = new THREE.DirectionalLight(0xfffbeb, 1.05);
 dirLight.position.set(14, 28, 18);
+dirLight.castShadow = true;
 scene.add(dirLight);
 
-// Articulated 3D Hero with Animated Limbs
+// Mario-Inspired 3D Character Rig
 const playerGroup = new THREE.Group();
-const bodyMesh = new THREE.Mesh(new THREE.BoxGeometry(0.95, 1.05, 0.9), new THREE.MeshStandardMaterial({ color: 0xf97316, roughness: 0.3 }));
-bodyMesh.position.y = 0.75;
-const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.46, 16, 16), new THREE.MeshStandardMaterial({ color: 0xfde047, roughness: 0.25 }));
-headMesh.position.y = 1.55;
 
-const legGeo = new THREE.BoxGeometry(0.28, 0.45, 0.32);
-const legMat = new THREE.MeshStandardMaterial({ color: 0x1e293b });
-const leftLeg = new THREE.Mesh(legGeo, legMat); leftLeg.position.set(-0.24, 0.22, 0);
-const rightLeg = new THREE.Mesh(legGeo, legMat); rightLeg.position.set(0.24, 0.22, 0);
+const shirtMat = new THREE.MeshStandardMaterial({ color: 0xe11d48, roughness: 0.35 });
+const overallsMat = new THREE.MeshStandardMaterial({ color: 0x2563eb, roughness: 0.45 });
+const capMat = new THREE.MeshStandardMaterial({ color: 0xdc2626, roughness: 0.3 });
+const skinMat = new THREE.MeshStandardMaterial({ color: 0xfdba74, roughness: 0.5 });
 
-const shieldMesh = new THREE.Mesh(
-  new THREE.SphereGeometry(1.25, 18, 18),
-  new THREE.MeshBasicMaterial({ color: 0x38bdf8, transparent: true, opacity: 0.3, wireframe: true })
+const torsoMesh = new THREE.Mesh(new THREE.BoxGeometry(0.92, 0.78, 0.76), shirtMat);
+torsoMesh.position.y = 0.84;
+const overallsMesh = new THREE.Mesh(new THREE.BoxGeometry(0.96, 0.52, 0.8), overallsMat);
+overallsMesh.position.y = 0.68;
+
+const headGroup = new THREE.Group();
+headGroup.position.set(0, 1.56, 0);
+
+const headMesh = new THREE.Mesh(new THREE.SphereGeometry(0.46, 20, 20), skinMat);
+const eyeMat = new THREE.MeshStandardMaterial({ color: 0x0f172a, roughness: 0.2 });
+const leftEye = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 10), eyeMat);
+leftEye.position.set(0.28, 0.06, 0.28);
+const rightEye = new THREE.Mesh(new THREE.SphereGeometry(0.075, 10, 10), eyeMat);
+rightEye.position.set(0.28, 0.06, -0.28);
+const noseMesh = new THREE.Mesh(new THREE.SphereGeometry(0.13, 12, 12), skinMat);
+noseMesh.position.set(0.45, -0.02, 0);
+
+const capDome = new THREE.Mesh(new THREE.SphereGeometry(0.49, 20, 14, 0, Math.PI * 2, 0, Math.PI * 0.55), capMat);
+capDome.position.set(-0.02, 0.08, 0);
+const capBrim = new THREE.Mesh(new THREE.CylinderGeometry(0.52, 0.52, 0.06, 16), capMat);
+capBrim.position.set(0.36, 0.14, 0);
+const capBadge = new THREE.Mesh(
+  new THREE.CylinderGeometry(0.14, 0.14, 0.05, 16),
+  new THREE.MeshStandardMaterial({ color: 0xffffff, emissive: 0xfde047, emissiveIntensity: 0.25 })
 );
-shieldMesh.position.y = 0.95;
-shieldMesh.visible = false;
+capBadge.rotation.z = Math.PI / 2;
+capBadge.position.set(0.46, 0.22, 0);
 
-playerGroup.add(bodyMesh, headMesh, leftLeg, rightLeg, shieldMesh);
+headGroup.add(headMesh, leftEye, rightEye, noseMesh, capDome, capBrim, capBadge);
+
+const armGeo = new THREE.BoxGeometry(0.25, 0.52, 0.26);
+const leftArm = new THREE.Mesh(armGeo, shirtMat); leftArm.position.set(0, 0.85, 0.58);
+const rightArm = new THREE.Mesh(armGeo, shirtMat); rightArm.position.set(0, 0.85, -0.58);
+
+const legGeo = new THREE.BoxGeometry(0.3, 0.44, 0.34);
+const leftLeg = new THREE.Mesh(legGeo, overallsMat); leftLeg.position.set(0, 0.22, 0.24);
+const rightLeg = new THREE.Mesh(legGeo, overallsMat); rightLeg.position.set(0, 0.22, -0.24);
+
+// Visible 3D Armor Shield Dome + Rotating Energy Ring
+const shieldGroup = new THREE.Group();
+const shieldDome = new THREE.Mesh(
+  new THREE.SphereGeometry(1.32, 22, 22),
+  new THREE.MeshStandardMaterial({
+    color: 0x38bdf8,
+    emissive: 0x0284c7,
+    emissiveIntensity: 0.35,
+    transparent: true,
+    opacity: 0.32,
+    roughness: 0.15
+  })
+);
+shieldDome.position.y = 1.0;
+const shieldRing = new THREE.Mesh(
+  new THREE.TorusGeometry(1.34, 0.06, 12, 32),
+  new THREE.MeshStandardMaterial({ color: 0xfde047, emissive: 0xf59e0b, emissiveIntensity: 0.4 })
+);
+shieldRing.rotation.x = Math.PI / 2;
+shieldRing.position.y = 1.0;
+shieldGroup.add(shieldDome, shieldRing);
+shieldGroup.visible = false;
+
+playerGroup.add(torsoMesh, overallsMesh, headGroup, leftArm, rightArm, leftLeg, rightLeg, shieldGroup);
 scene.add(playerGroup);
+
+// 7D Orc 3D Builder (Muscular Torso, Iron Pauldrons, Glowing Red Eyes, Tusks, Swinging Limbs)
+function create7DOrcMesh() {
+  const orcGroup = new THREE.Group();
+  const skin = new THREE.MeshStandardMaterial({ color: 0x4d7c0f, roughness: 0.55 });
+  const armor = new THREE.MeshStandardMaterial({ color: 0x334155, metalness: 0.45, roughness: 0.35 });
+  const tuskMat = new THREE.MeshStandardMaterial({ color: 0xfef9c3, roughness: 0.25 });
+  const eyeGlow = new THREE.MeshStandardMaterial({ color: 0xff2a55, emissive: 0xdc2626, emissiveIntensity: 0.8 });
+
+  const chest = new THREE.Mesh(new THREE.BoxGeometry(1.25, 1.25, 1.0), skin);
+  chest.position.y = 0.95;
+
+  const pauldronL = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.42, 1.08), armor);
+  pauldronL.position.set(-0.42, 1.52, 0);
+  pauldronL.rotation.z = 0.25;
+
+  const pauldronR = new THREE.Mesh(new THREE.BoxGeometry(0.46, 0.42, 1.08), armor);
+  pauldronR.position.set(0.42, 1.52, 0);
+  pauldronR.rotation.z = -0.25;
+
+  const orcHead = new THREE.Mesh(new THREE.BoxGeometry(0.85, 0.78, 0.82), skin);
+  orcHead.position.set(0, 1.98, 0);
+
+  const eyeL = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), eyeGlow);
+  eyeL.position.set(-0.38, 2.04, 0.22);
+  const eyeR = new THREE.Mesh(new THREE.SphereGeometry(0.08, 8, 8), eyeGlow);
+  eyeR.position.set(-0.38, 2.04, -0.22);
+
+  const tuskL = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.34, 8), tuskMat);
+  tuskL.position.set(-0.42, 1.82, 0.24);
+  tuskL.rotation.z = 0.25;
+
+  const tuskR = new THREE.Mesh(new THREE.ConeGeometry(0.09, 0.34, 8), tuskMat);
+  tuskR.position.set(-0.42, 1.82, -0.24);
+  tuskR.rotation.z = 0.25;
+
+  const oLegL = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.5, 0.4), armor);
+  oLegL.position.set(0, 0.25, 0.32);
+  const oLegR = new THREE.Mesh(new THREE.BoxGeometry(0.36, 0.5, 0.4), armor);
+  oLegR.position.set(0, 0.25, -0.32);
+
+  const auraRing = new THREE.Mesh(
+    new THREE.TorusGeometry(1.15, 0.05, 10, 24),
+    new THREE.MeshBasicMaterial({ color: 0xef4444, transparent: true, opacity: 0.45 })
+  );
+  auraRing.rotation.x = Math.PI / 2;
+  auraRing.position.y = 0.12;
+
+  orcGroup.add(chest, pauldronL, pauldronR, orcHead, eyeL, eyeR, tuskL, tuskR, oLegL, oLegR, auraRing);
+  return { orcGroup, oLegL, oLegR, auraRing };
+}
 
 // Level Entities
 let platforms = [];
 let sceneryMeshes = [];
 let collectibles = [];
 let hazards = [];
+let orcs = [];
 let springs = [];
 let particles = [];
 let seaPlane = null;
@@ -330,11 +444,13 @@ let state = {
   hasShield: false,
   jetpackTimer: 0,
   magnetTimer: 0,
+  orcGrowlCooldown: 0,
   stars: 0,
   food: 0,
   distance: 0,
   scale: 1.0,
   vx: 0, vy: 0,
+  facing: 1,
   dashCooldown: 0,
   onGround: false,
   jumpsLeft: 2,
@@ -407,13 +523,15 @@ function clearSceneEntities() {
   sceneryMeshes.forEach(s => scene.remove(s));
   collectibles.forEach(c => scene.remove(c.mesh));
   hazards.forEach(h => scene.remove(h.mesh));
+  orcs.forEach(o => scene.remove(o.orcGroup));
   springs.forEach(sp => scene.remove(sp.mesh));
   particles.forEach(pt => scene.remove(pt.mesh));
   if (seaPlane) { scene.remove(seaPlane); seaPlane = null; }
   if (portalMesh) { scene.remove(portalMesh); portalMesh = null; }
   if (bossEntity) { scene.remove(bossEntity.mesh); bossEntity = null; }
-  platforms = []; sceneryMeshes = []; collectibles = []; hazards = []; springs = []; particles = [];
+  platforms = []; sceneryMeshes = []; collectibles = []; hazards = []; orcs = []; springs = []; particles = [];
   document.getElementById('boss-hud').style.display = 'none';
+  document.getElementById('orc-alert').style.display = 'none';
 }
 
 function addBiomeScenery(x, y, biome, accentColor) {
@@ -449,7 +567,7 @@ function addBiomeScenery(x, y, biome, accentColor) {
 }
 
 function spawnChunk(i, world, isBossArena = false) {
-  const width = isBossArena ? 16 : (i === 0 ? 9 : (3.6 + (i % 3) * 1.1));
+  const width = isBossArena ? 16 : (i === 0 ? 9 : (3.8 + (i % 3) * 1.1));
   const x = i * 6.5 + (isBossArena ? 3.5 : 0);
   const y = (i === 0 || isBossArena) ? 0 : Math.sin(i * 0.85 + world.id) * 2.3;
   const moving = (!isBossArena && i > 2 && i % 4 === 0);
@@ -463,7 +581,6 @@ function spawnChunk(i, world, isBossArena = false) {
   addBiomeScenery(x + 1.5, y, world.biome, world.accent);
 
   if (isBossArena) {
-    // Spawn 3D World Boss!
     const bMesh = new THREE.Mesh(
       new THREE.DodecahedronGeometry(1.85),
       new THREE.MeshStandardMaterial({ color: 0xdc2626, emissive: 0x7f1d1d, roughness: 0.3 })
@@ -475,7 +592,6 @@ function spawnChunk(i, world, isBossArena = false) {
     document.getElementById('boss-hp-bar').style.width = '100%';
     document.getElementById('boss-hud').style.display = 'block';
 
-    // Victory Portal behind Boss
     portalMesh = new THREE.Mesh(
       new THREE.TorusGeometry(1.7, 0.3, 14, 28),
       new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 })
@@ -496,7 +612,23 @@ function spawnChunk(i, world, isBossArena = false) {
       springs.push({ mesh: spMesh });
     }
 
-    if (i % 3 === 0) {
+    // Suspenseful 7D Orc encounters on select islands (e.g., 4th, 9th, 14th...)
+    if (i >= 4 && i % 5 === 4) {
+      const orcRig = create7DOrcMesh();
+      const orcScale = 0.95 + ((i + world.id) % 3) * 0.14;
+      orcRig.orcGroup.scale.setScalar(orcScale);
+      orcRig.orcGroup.position.set(x + 0.5, y + 0.65, 0);
+      scene.add(orcRig.orcGroup);
+      orcs.push({
+        ...orcRig,
+        centerX: x,
+        baseY: y + 0.65,
+        range: Math.max(0.8, width * 0.34),
+        dir: -1,
+        alive: true,
+        alerted: false
+      });
+    } else if (i % 3 === 0) {
       const hzMesh = new THREE.Mesh(
         new THREE.DodecahedronGeometry(0.55),
         new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0x7f1d1d })
@@ -506,7 +638,6 @@ function spawnChunk(i, world, isBossArena = false) {
       hazards.push({ mesh: hzMesh, centerX: x, range: width * 0.35, dir: 1 });
     }
 
-    // Power-Up Orb every 7th island (Jetpack or Star Magnet)
     if (i % 7 === 0) {
       const pType = (i % 14 === 0) ? 'jetpack' : 'magnet';
       const pMesh = new THREE.Mesh(
@@ -535,6 +666,13 @@ function spawnChunk(i, world, isBossArena = false) {
   state.chunkIndex = i + 1;
 }
 
+function applyHeroAppearance(hero) {
+  shirtMat.color.setHex(hero.shirt);
+  overallsMat.color.setHex(hero.overalls);
+  capMat.color.setHex(hero.cap);
+  skinMat.color.setHex(hero.skin);
+}
+
 function initSession() {
   clearSceneEntities();
   const activeMember = state.squad[state.activePlayerIdx];
@@ -555,16 +693,18 @@ function initSession() {
     scene.add(seaPlane);
   }
 
-  bodyMesh.material.color.setHex(hero.color);
-  headMesh.material.color.setHex(hero.accent);
+  applyHeroAppearance(hero);
 
   state.hearts = 3;
   state.hasShield = state.megaBoostStart;
-  shieldMesh.visible = state.hasShield;
+  shieldGroup.visible = state.hasShield;
   state.jetpackTimer = 0;
   state.magnetTimer = 0;
+  state.orcGrowlCooldown = 0;
   state.stars = 0;
   state.distance = 0;
+  state.facing = 1;
+  playerGroup.rotation.y = 0;
   state.food = (hero.startFood || 0) + (state.megaBoostStart ? 25 : 0);
   state.megaBoostStart = false;
   state.scale = 1.0;
@@ -706,6 +846,7 @@ document.getElementById('btn-menu').onclick = () => {
   document.getElementById('hud').style.display = 'none';
   document.getElementById('controls').style.display = 'none';
   document.getElementById('boss-hud').style.display = 'none';
+  document.getElementById('orc-alert').style.display = 'none';
   document.getElementById('start-screen').style.display = 'flex';
 };
 
@@ -734,8 +875,16 @@ function finishTurn(reasonTitle) {
 document.getElementById('btn-double-stars').onclick = () => {
   window.showRewardedAd(() => {
     state.stars += 20;
+    state.hearts = Math.max(state.hearts, 3);
+    state.hasShield = true;
+    shieldGroup.visible = true;
+    state.food = Math.max(state.food, 25) + 15;
+    updateGrowth(true);
     const member = state.squad[state.activePlayerIdx];
-    if (member) member.bestStars = Math.max(member.bestStars, state.stars);
+    if (member) {
+      member.bestStars = Math.max(member.bestStars, state.stars);
+      member.maxScale = Math.max(member.maxScale, state.scale);
+    }
     updateHUD();
     document.getElementById('btn-double-stars').style.display = 'none';
   });
@@ -759,32 +908,41 @@ function animate() {
   requestAnimationFrame(animate);
   clockTick += 0.05;
 
+  if (shieldGroup.visible) {
+    shieldRing.rotation.z += 0.04;
+  }
+
   if (state.playing) {
     const hero = state.squad[state.activePlayerIdx]?.hero || state.selectedHero;
     if (state.dashCooldown > 0) state.dashCooldown--;
+    if (state.orcGrowlCooldown > 0) state.orcGrowlCooldown--;
     if (state.jetpackTimer > 0) { state.jetpackTimer--; if (state.jetpackTimer === 0) updateHUD(); }
     if (state.magnetTimer > 0) { state.magnetTimer--; if (state.magnetTimer === 0) updateHUD(); }
 
-    // Endless Endurance Procedural Generation + Biome Shift every 14 islands
     if (state.mode === 'endurance' && playerGroup.position.x + 65 > state.generatedUntilX) {
       const dynamicWorld = WORLDS[Math.floor(state.chunkIndex / 14) % WORLDS.length];
       spawnChunk(state.chunkIndex, dynamicWorld, false);
     }
 
-    // Horizontal Velocity & Limb Run Cycle
     if (Math.abs(state.vx) <= hero.speed * 1.1) {
-      if (keys.left) state.vx = -hero.speed;
-      else if (keys.right) state.vx = hero.speed;
+      if (keys.left) { state.vx = -hero.speed; state.facing = -1; }
+      else if (keys.right) { state.vx = hero.speed; state.facing = 1; }
       else state.vx *= 0.78;
     } else {
       state.vx *= 0.9;
     }
 
+    playerGroup.rotation.y = state.facing === 1 ? 0 : Math.PI;
+
     if (Math.abs(state.vx) > 0.02) {
-      leftLeg.rotation.x = Math.sin(clockTick * 3.2) * 0.65;
-      rightLeg.rotation.x = -Math.sin(clockTick * 3.2) * 0.65;
+      const swing = Math.sin(clockTick * 3.2) * 0.65;
+      leftLeg.rotation.z = swing;
+      rightLeg.rotation.z = -swing;
+      leftArm.rotation.z = -swing * 0.8;
+      rightArm.rotation.z = swing * 0.8;
     } else {
-      leftLeg.rotation.x = 0; rightLeg.rotation.x = 0;
+      leftLeg.rotation.z = 0; rightLeg.rotation.z = 0;
+      leftArm.rotation.z = 0; rightArm.rotation.z = 0;
     }
 
     playerGroup.position.x += state.vx;
@@ -792,7 +950,6 @@ function animate() {
     playerGroup.position.y += state.vy;
     state.distance = Math.max(state.distance, Math.floor(playerGroup.position.x));
 
-    // Platforms & Giant Stomp
     state.onGround = false;
     platforms.forEach(p => {
       if (p.moving) p.mesh.position.y = p.baseY + Math.sin(clockTick * 0.8 + p.phase) * 1.4;
@@ -814,7 +971,6 @@ function animate() {
       }
     });
 
-    // Springs
     springs.forEach(sp => {
       if (playerGroup.position.distanceTo(sp.mesh.position) < 1.15 * state.scale) {
         state.vy = 0.58;
@@ -825,7 +981,76 @@ function animate() {
       }
     });
 
-    // Hazards
+    // 7D Orc Patrol, Suspense Warning & Stomp/Giant Smash Combat
+    let nearbyOrc = false;
+    orcs.forEach(orc => {
+      if (!orc.alive) return;
+      orc.auraRing.rotation.z += 0.05;
+      const dxToPlayer = playerGroup.position.x - orc.orcGroup.position.x;
+      const dist = playerGroup.position.distanceTo(orc.orcGroup.position);
+
+      if (Math.abs(dxToPlayer) < 9.5) {
+        nearbyOrc = true;
+        if (!orc.alerted && state.orcGrowlCooldown <= 0) {
+          orc.alerted = true;
+          state.orcGrowlCooldown = 140;
+          state.shakeTime = 0.22;
+          playSound(95, 'sawtooth', 0.32, 58, 0.16);
+          buzz(45);
+        }
+      }
+
+      // Lunge toward player when close, otherwise patrol island
+      if (Math.abs(dxToPlayer) < 6.5) {
+        orc.dir = dxToPlayer >= 0 ? 1 : -1;
+        orc.orcGroup.position.x += orc.dir * 0.068;
+      } else {
+        orc.orcGroup.position.x += orc.dir * 0.042;
+        if (Math.abs(orc.orcGroup.position.x - orc.centerX) > orc.range) orc.dir *= -1;
+      }
+      orc.orcGroup.rotation.y = orc.dir === -1 ? 0 : Math.PI;
+      const stepSwing = Math.sin(clockTick * 3.8) * 0.55;
+      orc.oLegL.rotation.z = stepSwing;
+      orc.oLegR.rotation.z = -stepSwing;
+
+      if (dist < 1.35 * state.scale) {
+        // Stomp from above, dash, or Giant 2.2x+ body slam defeats the 7D Orc!
+        if (state.vy < -0.04 || state.scale >= 2.2 || state.dashCooldown > 25) {
+          orc.alive = false;
+          orc.orcGroup.visible = false;
+          state.vy = Math.max(state.vy, 0.36);
+          state.stars += 4;
+          state.food += 4;
+          state.shakeTime = 0.26;
+          playSound(160, 'square', 0.22, 65, 0.18);
+          buzz(55);
+          spawnParticles(orc.orcGroup.position, 0x84cc16, 18);
+          updateGrowth(true);
+        } else if (state.hasShield) {
+          state.hasShield = false;
+          shieldGroup.visible = false;
+          orc.alive = false;
+          orc.orcGroup.visible = false;
+          playSound(300, 'triangle', 0.2, 150);
+          spawnParticles(orc.orcGroup.position, 0x38bdf8, 14);
+        } else {
+          orc.alive = false;
+          orc.orcGroup.visible = false;
+          state.hearts--;
+          state.food = Math.max(0, state.food - 12);
+          state.shakeTime = 0.28;
+          updateGrowth(false);
+          playSound(140, 'sawtooth', 0.28, 70);
+          buzz(75);
+          if (state.hearts <= 0) {
+            finishTurn(`⚔️ ${state.squad[state.activePlayerIdx].name.toUpperCase()} FALLEN TO 7D ORCS!`);
+          }
+        }
+        updateHUD();
+      }
+    });
+    document.getElementById('orc-alert').style.display = nearbyOrc ? 'block' : 'none';
+
     hazards.forEach(hz => {
       hz.mesh.rotation.z += 0.08;
       hz.mesh.position.x += hz.dir * 0.04;
@@ -841,9 +1066,10 @@ function animate() {
           spawnParticles(hz.mesh.position, 0xfacc15, 16);
         } else if (state.hasShield) {
           state.hasShield = false;
-          shieldMesh.visible = false;
+          shieldGroup.visible = false;
           hz.mesh.visible = false;
           playSound(300, 'triangle', 0.2, 150);
+          spawnParticles(playerGroup.position, 0x38bdf8, 14);
         } else {
           hz.mesh.visible = false;
           state.hearts--;
@@ -859,7 +1085,6 @@ function animate() {
       }
     });
 
-    // World Boss AI & Stomp Combat
     if (bossEntity && bossEntity.hp > 0) {
       bossEntity.mesh.rotation.y += 0.04;
       bossEntity.mesh.position.x += bossEntity.dir * 0.05;
@@ -868,7 +1093,6 @@ function animate() {
 
       const distToBoss = playerGroup.position.distanceTo(bossEntity.mesh.position);
       if (distToBoss < 2.1 * state.scale) {
-        // Stomp from above OR Giant 2.2x+ body slam hurts the boss!
         if (state.vy < -0.05 || state.scale >= 2.2) {
           bossEntity.hp--;
           state.vy = 0.42;
@@ -890,7 +1114,6 @@ function animate() {
       }
     }
 
-    // Sea / Pit Fall
     if (playerGroup.position.y < -8) {
       if (state.mode === 'endurance') {
         finishTurn(`🌊 ${state.squad[state.activePlayerIdx].name.toUpperCase()} FELL AT ${state.distance}m!`);
@@ -901,7 +1124,6 @@ function animate() {
       }
     }
 
-    // Collectibles, Food & Power-Up Orbs
     const magnetRange = (state.scale >= 3.0 || state.magnetTimer > 0) ? 7.5 : (1.3 * state.scale);
     collectibles.forEach(c => {
       if (c.collected) return;
@@ -934,7 +1156,6 @@ function animate() {
       }
     });
 
-    // Portal Victory (requires Boss defeated)
     if (portalMesh) {
       portalMesh.rotation.z += 0.05;
       if ((!bossEntity || bossEntity.hp <= 0) && playerGroup.position.distanceTo(portalMesh.position) < 2.4 * state.scale) {
@@ -944,7 +1165,6 @@ function animate() {
       }
     }
 
-    // Dynamic 7D Camera
     const targetX = playerGroup.position.x + 2.8;
     const targetY = playerGroup.position.y + 3.4 + (state.scale - 1) * 1.4;
     const targetZ = 13.5 + (state.scale - 1) * 2.6;
