@@ -63,6 +63,11 @@
     .btn-ctrl:active { transform: scale(0.92); background: rgba(250, 204, 21, 0.45); }
     .btn-jump { width: 82px; height: 82px; background: rgba(250, 204, 21, 0.36); border-color: #fde047; font-size: 15px; }
     .btn-dash { width: 58px; height: 58px; background: rgba(56, 189, 248, 0.36); border-color: #38bdf8; font-size: 12px; }
+    .btn-skip {
+      pointer-events: auto; padding: 8px 12px; border-radius: 12px;
+      border: 2px solid #fde047; background: rgba(250, 204, 21, 0.24);
+      color: #fde047; font-size: 11px; font-weight: 900; cursor: pointer;
+    }
 
     /* OVERLAYS */
     .overlay {
@@ -111,14 +116,14 @@
     .hero-name { font-size: 12px; font-weight: 800; margin-top: 2px; }
     .hero-perk { font-size: 10px; color: #94a3b8; }
 
-    /* WORLDS */
-    .world-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; max-height: 165px; overflow-y: auto; }
-    @media (min-width: 580px) { .world-grid { grid-template-columns: repeat(5, 1fr); } }
-    .world-btn {
+    /* LEVEL SELECTOR */
+    .level-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 7px; max-height: 170px; overflow-y: auto; }
+    @media (min-width: 580px) { .level-grid { grid-template-columns: repeat(5, 1fr); } }
+    .level-btn {
       background: rgba(30, 41, 59, 0.9); border: 2px solid rgba(255,255,255,0.15);
       border-radius: 11px; padding: 7px 5px; color: #fff; cursor: pointer; font-size: 11px; font-weight: 700;
     }
-    .world-btn.active { border-color: #4ade80; background: rgba(74, 222, 128, 0.22); }
+    .level-btn.active { border-color: #4ade80; background: rgba(74, 222, 128, 0.22); color: #bbf7d0; }
 
     /* BUTTONS */
     .btn-primary {
@@ -154,7 +159,8 @@
   <div class="hud-box" style="text-align:right;">
     <div class="hud-title" id="hud-world-name">LVL 1 • Jumping Slabs</div>
     <div class="hud-val">⭐ <span id="hud-stars">0</span> | 🍎 <span id="hud-food">0</span> | 📏 <span id="hud-dist">0m</span></div>
-    <div style="font-size:11px; color:#cbd5e1;" id="hud-quest">Leap across emerald slabs, defeat 7D Orcs & reach the portal!</div>
+    <div style="font-size:11px; color:#cbd5e1; margin-bottom:4px;" id="hud-quest">L1: Leap across floating emerald slabs, smash 7D Orcs & enter portal!</div>
+    <button class="btn-skip" id="btn-next-level-now">NEXT LVL ⏭</button>
   </div>
 </div>
 
@@ -206,8 +212,8 @@
     <div class="section-label">3. Choose Active 3D Hero</div>
     <div class="hero-grid" id="hero-grid"></div>
 
-    <div class="section-label">4. Choose Starting World Accent</div>
-    <div class="world-grid" id="world-grid"></div>
+    <div class="section-label">4. Select Starting Level & Scene (Advances Automatically Each Level!)</div>
+    <div class="level-grid" id="level-grid"></div>
 
     <button class="btn-ad" id="btn-mega-start">🎬 Watch Ad: Grow to MEGA TITAN (2.2x) + Equip Armor Shield!</button>
     <button class="btn-primary" id="btn-play">▶ LAUNCH 3D ADVENTURE</button>
@@ -227,7 +233,7 @@
 </div>
 
 <script>
-// ==================== 1. HEROES, 10 DISTINCT LEVEL ARCHITECTURES & 10 WORLDS ====================
+// ==================== 1. HEROES & 10 DISTINCT LEVEL ARCHITECTURES ====================
 const HEROES = [
   { id: 'osa', name: 'Osa Hero', icon: '🐿️', shirt: 0xe11d48, overalls: 0x2563eb, cap: 0xdc2626, skin: 0xfdba74, perk: 'Triple-Jump', jump: 0.35, speed: 0.17, maxJumps: 3 },
   { id: 'blaze', name: 'Blaze Red', icon: '🐲', shirt: 0xf97316, overalls: 0x1d4ed8, cap: 0xef4444, skin: 0xfac898, perk: '+10 Start Food', jump: 0.33, speed: 0.16, maxJumps: 2, startFood: 10 },
@@ -238,77 +244,64 @@ const HEROES = [
 const LEVEL_BLUEPRINTS = [
   {
     levelNum: 1, key: 'jumping_slabs', title: 'Jumping Slabs', biome: 'mountain',
-    sky: 0x38bdf8, fog: 0xbae6fd, ground: 0x16a34a, accent: 0xfacc15,
+    sky: 0x38bdf8, fog: 0xbae6fd, ground: 0x16a34a, accent: 0xfacc15, baseFreq: 261.6,
     boss: 'King Konga Slab-Lord',
     quest: 'L1: Leap across floating emerald slabs, smash 7D Orcs & enter portal!'
   },
   {
     levelNum: 2, key: 'climbing_mountains', title: 'Climbing Mountains', biome: 'mountain',
-    sky: 0x0284c7, fog: 0xe0f2fe, ground: 0x475569, accent: 0xfde047,
+    sky: 0x0284c7, fog: 0xe0f2fe, ground: 0x475569, accent: 0xfde047, baseFreq: 293.7,
     boss: 'Peak Colossus Orc',
     quest: 'L2: Climb steep mountain ledges & springs to the summit boss!'
   },
   {
     levelNum: 3, key: 'swimming_ocean', title: 'Swimming in Ocean', biome: 'sea',
-    sky: 0x0369a1, fog: 0x0284c7, ground: 0xfbbf24, accent: 0x22d3ee,
+    sky: 0x0369a1, fog: 0x0284c7, ground: 0xfbbf24, accent: 0x22d3ee, baseFreq: 329.6,
     boss: 'Abyssal Leviathan',
     quest: 'L3: Swim through deep ocean waters, coral reefs & sea raiders!'
   },
   {
     levelNum: 4, key: 'fighting_desert', title: 'Fighting in Desert', biome: 'desert',
-    sky: 0xf59e0b, fog: 0xfef3c7, ground: 0xd97706, accent: 0xfef08a,
+    sky: 0xf59e0b, fog: 0xfef3c7, ground: 0xd97706, accent: 0xfef08a, baseFreq: 349.2,
     boss: 'Dune Warlord Orc',
     quest: 'L4: Fight fierce 7D Orc warbands across golden desert dunes!'
   },
   {
     levelNum: 5, key: 'flying_airplane', title: 'Flying with Airplane', biome: 'sky',
-    sky: 0x60a5fa, fog: 0xeff6ff, ground: 0xf8fafc, accent: 0xf472b6,
+    sky: 0x60a5fa, fog: 0xeff6ff, ground: 0xf8fafc, accent: 0xf472b6, baseFreq: 392.0,
     boss: 'Sky-Wing Dreadnought',
     quest: 'L5: Pilot your 3D airplane through cloud banks & defeat the sky boss!'
   },
   {
     levelNum: 6, key: 'riding_motorbike', title: 'Riding Motorbike', biome: 'desert',
-    sky: 0xea580c, fog: 0xffedd5, ground: 0x1e293b, accent: 0x38bdf8,
+    sky: 0xea580c, fog: 0xffedd5, ground: 0x1e293b, accent: 0x38bdf8, baseFreq: 440.0,
     boss: 'Iron-Wheel Orc Boss',
     quest: 'L6: Race your 3D motorbike at high speed while 7D Orcs chase!'
   },
   {
-    levelNum: 7, key: 'amazon_parachute', title: 'Parachute into Amazon Rainforest', biome: 'rainforest',
-    sky: 0x0f766e, fog: 0x99f6e4, ground: 0x15803d, accent: 0xfacc15,
+    levelNum: 7, key: 'amazon_parachute', title: 'Amazon Parachute & Dinos', biome: 'rainforest',
+    sky: 0x0f766e, fog: 0x99f6e4, ground: 0x15803d, accent: 0xfacc15, baseFreq: 493.9,
     boss: 'Apex Rex & Jungle Warlord',
     quest: 'L7: Parachute into the Amazon & face dinosaurs & wild creatures!'
   },
   {
-    levelNum: 8, key: 'glacier_peaks', title: 'Glacier Peaks Expedition', biome: 'mountain',
-    sky: 0x0ea5e9, fog: 0xe0f2fe, ground: 0xe2e8f0, accent: 0x38bdf8,
+    levelNum: 8, key: 'glacier_peaks', title: 'Glacier Peaks', biome: 'mountain',
+    sky: 0x0ea5e9, fog: 0xe0f2fe, ground: 0xe2e8f0, accent: 0x38bdf8, baseFreq: 523.3,
     boss: 'Yeti Frost-King',
     quest: 'L8: Cross icy glacier terraces & defeat the Yeti Frost-King!'
   },
   {
     levelNum: 9, key: 'volcano_citadel', title: 'Volcano Lava Citadel', biome: 'lava',
-    sky: 0x7f1d1d, fog: 0x991b1b, ground: 0x27272a, accent: 0xf97316,
+    sky: 0x7f1d1d, fog: 0x991b1b, ground: 0x27272a, accent: 0xf97316, baseFreq: 246.9,
     boss: 'Magma Dragon',
     quest: 'L9: Conquer the molten volcano fortress & defeat the Magma Dragon!'
   },
   {
     levelNum: 10, key: 'galactic_void', title: 'Galactic Star Citadel', biome: 'space',
-    sky: 0x050811, fog: 0x1e1b4b, ground: 0x3b82f6, accent: 0xf43f5e,
+    sky: 0x050811, fog: 0x1e1b4b, ground: 0x3b82f6, accent: 0xf43f5e, baseFreq: 587.3,
     boss: 'Emperor Void',
     quest: 'L10: Cross starlight bridges in deep space & defeat Emperor Void!'
   }
-];
-
-const WORLDS = [
-  { id: 1, name: 'Emerald Mountains', biome: 'mountain', sky: 0x38bdf8, fog: 0xbae6fd, ground: 0x16a34a, accent: 0xfacc15, baseFreq: 261.6, boss: 'King Konga Gorilla' },
-  { id: 2, name: 'Golden Desert', biome: 'desert', sky: 0xf59e0b, fog: 0xfef3c7, ground: 0xd97706, accent: 0xfef08a, baseFreq: 293.7, boss: 'Pharaoh Sphinx' },
-  { id: 3, name: 'Coral Sea & Islands', biome: 'sea', sky: 0x0284c7, fog: 0x7dd3fc, ground: 0xfbbf24, accent: 0x22d3ee, baseFreq: 329.6, boss: 'Captain Crab-Claw' },
-  { id: 4, name: 'Cloud Sky Kingdom', biome: 'sky', sky: 0x60a5fa, fog: 0xeff6ff, ground: 0xf8fafc, accent: 0xf472b6, baseFreq: 349.2, boss: 'Griffin Sky-Lord' },
-  { id: 5, name: 'Crystal Caverns', biome: 'crystal', sky: 0x1e1b4b, fog: 0x312e81, ground: 0x4f46e5, accent: 0x22d3ee, baseFreq: 392.0, boss: 'Golem Rock-Jaw' },
-  { id: 6, name: 'Dino & Rainforest Wilds', biome: 'rainforest', sky: 0x0f766e, fog: 0x99f6e4, ground: 0x15803d, accent: 0xfacc15, baseFreq: 440.0, boss: 'Apex Rex & Orc Warlord' },
-  { id: 7, name: 'Frosty Glacier Peaks', biome: 'mountain', sky: 0x0ea5e9, fog: 0xe0f2fe, ground: 0xe2e8f0, accent: 0x38bdf8, baseFreq: 493.9, boss: 'Yeti Frost-King' },
-  { id: 8, name: 'Candy Cloud Carnival', biome: 'sky', sky: 0xec4899, fog: 0xfce7f3, ground: 0xfb7185, accent: 0xfde047, baseFreq: 523.3, boss: 'Captain Cupcake' },
-  { id: 9, name: 'Volcano Lava Fortress', biome: 'lava', sky: 0x7f1d1d, fog: 0x991b1b, ground: 0x27272a, accent: 0xf97316, baseFreq: 246.9, boss: 'Magma Dragon' },
-  { id: 10, name: 'Galactic Star Citadel', biome: 'space', sky: 0x050811, fog: 0x1e1b4b, ground: 0x3b82f6, accent: 0xf43f5e, baseFreq: 587.3, boss: 'Emperor Void' }
 ];
 
 // ==================== 2. 7D MULTI-TONE AUDIO & HAPTICS ====================
@@ -653,7 +646,6 @@ let state = {
   vehicleMode: 'foot', // 'foot' | 'plane' | 'bike' | 'parachute'
   vehicleTimer: 0,
   selectedHero: HEROES[0],
-  selectedWorld: WORLDS[0],
   squad: [],
   activePlayerIdx: 0,
   hearts: 3,
@@ -701,18 +693,18 @@ HEROES.forEach((h, idx) => {
   heroGrid.appendChild(card);
 });
 
-const worldGrid = document.getElementById('world-grid');
-WORLDS.forEach((w, idx) => {
+const levelGrid = document.getElementById('level-grid');
+LEVEL_BLUEPRINTS.forEach((bp, idx) => {
   const btn = document.createElement('button');
-  btn.className = 'world-btn' + (idx === 0 ? ' active' : '');
-  btn.textContent = `W${w.id}: ${w.name}`;
+  btn.className = 'level-btn' + (idx === 0 ? ' active' : '');
+  btn.textContent = `L${bp.levelNum}: ${bp.title}`;
   btn.onclick = () => {
-    document.querySelectorAll('.world-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.level-btn').forEach(b => b.classList.remove('active'));
     btn.classList.add('active');
-    state.selectedWorld = w;
+    state.level = bp.levelNum;
     playSound(600, 'sine', 0.09);
   };
-  worldGrid.appendChild(btn);
+  levelGrid.appendChild(btn);
 });
 
 document.getElementById('mode-adventure').onclick = () => {
@@ -780,10 +772,10 @@ function setVehicleMode(mode, frames = 520) {
   updateHUD();
 }
 
-function addLevelScenery(x, y, bp, accentColor) {
+function addLevelScenery(x, y, bp) {
   const key = bp.key;
   if (key === 'jumping_slabs' || key === 'climbing_mountains' || key === 'glacier_peaks') {
-    const peakH = key === 'climbing_mountains' ? 19 : 14;
+    const peakH = key === 'climbing_mountains' ? 20 : 14;
     const mtn = new THREE.Mesh(
       new THREE.ConeGeometry(6.2 + (x % 4), peakH + (x % 5), 6),
       new THREE.MeshStandardMaterial({ color: key === 'glacier_peaks' ? 0xbae6fd : 0x475569, roughness: 0.82 })
@@ -826,7 +818,7 @@ function addLevelScenery(x, y, bp, accentColor) {
   } else {
     const spire = new THREE.Mesh(
       new THREE.OctahedronGeometry(3.2),
-      new THREE.MeshStandardMaterial({ color: accentColor, emissive: accentColor, emissiveIntensity: 0.35 })
+      new THREE.MeshStandardMaterial({ color: bp.accent, emissive: bp.accent, emissiveIntensity: 0.35 })
     );
     spire.position.set(x, y + 2.5, -12);
     scene.add(spire); sceneryMeshes.push(spire);
@@ -842,76 +834,36 @@ function computeChunkGeometry(i, bp, lvl) {
   if (i === 0) return { width: 12, y: 0, height: 1.4, moving: false };
 
   if (key === 'jumping_slabs') {
-    return {
-      width: 4.8 + (i % 3) * 1.1,
-      y: Math.sin(i * 0.85) * 1.9,
-      height: 1.1,
-      moving: i % 5 === 0
-    };
+    return { width: 4.8 + (i % 3) * 1.1, y: Math.sin(i * 0.85) * 1.9, height: 1.1, moving: i % 5 === 0 };
   }
   if (key === 'climbing_mountains') {
-    return {
-      width: 6.2,
-      y: Math.min(22, i * 0.55) + Math.sin(i * 0.5) * 0.5,
-      height: 3.2,
-      moving: false
-    };
+    return { width: 6.2, y: Math.min(18, i * 0.65) + Math.sin(i * 0.5) * 0.5, height: 3.2, moving: false };
   }
   if (key === 'swimming_ocean') {
-    return {
-      width: 9.5,
-      y: -5.2,
-      height: 1.2,
-      moving: false
-    };
+    return { width: 9.5, y: -5.2, height: 1.2, moving: false };
   }
   if (key === 'fighting_desert') {
-    return {
-      width: 15.0,
-      y: Math.sin(i * 0.4) * 0.5,
-      height: 1.4,
-      moving: false
-    };
+    return { width: 15.0, y: Math.sin(i * 0.4) * 0.5, height: 1.4, moving: false };
   }
   if (key === 'flying_airplane') {
-    return {
-      width: 11.0,
-      y: -6.5,
-      height: 1.2,
-      moving: false
-    };
+    return { width: 11.0, y: -6.5, height: 1.2, moving: false };
   }
   if (key === 'riding_motorbike') {
-    return {
-      width: 15.5,
-      y: 0,
-      height: 1.4,
-      moving: false
-    };
+    return { width: 15.5, y: 0, height: 1.4, moving: false };
   }
   if (key === 'amazon_parachute') {
-    return {
-      width: 14.5,
-      y: 0,
-      height: 1.4,
-      moving: false
-    };
+    return { width: 14.5, y: 0, height: 1.4, moving: false };
   }
-  return {
-    width: 6.4 + (i % 3) * 1.3,
-    y: Math.sin(i * 0.72 + lvl) * 2.1,
-    height: 1.3,
-    moving: i % 6 === 0
-  };
+  return { width: 6.4 + (i % 3) * 1.3, y: Math.sin(i * 0.72 + lvl) * 2.1, height: 1.3, moving: i % 6 === 0 };
 }
 
-function spawnChunk(i, world, bp, isBossArena = false) {
+function spawnChunk(i, bp, isBossArena = false) {
   const lvl = state.level;
   const key = bp.key;
   const geom = computeChunkGeometry(i, bp, lvl);
-  const width = isBossArena ? 22 : geom.width;
+  const width = isBossArena ? 20 : geom.width;
   const x = i * (key === 'jumping_slabs' ? 8.2 : 7.8) + (isBossArena ? 4.5 : 0);
-  const y = isBossArena ? geom.y : geom.y;
+  const y = geom.y;
   const height = isBossArena ? 1.6 : geom.height;
 
   const platMat = new THREE.MeshStandardMaterial({ color: bp.ground, roughness: 0.45 });
@@ -920,7 +872,7 @@ function spawnChunk(i, world, bp, isBossArena = false) {
   scene.add(mesh);
   platforms.push({ mesh, w: width, h: height, baseY: y, moving: !isBossArena && geom.moving, phase: i });
 
-  addLevelScenery(x + 1.5, y, bp, world.accent);
+  addLevelScenery(x + 1.5, y, bp);
 
   if (isBossArena) {
     const bMesh = new THREE.Mesh(
@@ -930,7 +882,7 @@ function spawnChunk(i, world, bp, isBossArena = false) {
     const bossY = (key === 'swimming_ocean' || key === 'flying_airplane') ? y + 4.2 : y + 2.4;
     bMesh.position.set(x + 2.5, bossY, 0);
     scene.add(bMesh);
-    const bossHp = 3 + Math.min(4, Math.floor((lvl - 1) / 2));
+    const bossHp = 2 + Math.min(3, Math.floor((lvl - 1) / 3));
     bossEntity = { mesh: bMesh, hp: bossHp, maxHp: bossHp, centerX: x + 2.5, dir: -1, baseY: bossY };
     document.getElementById('boss-name-label').textContent = `👹 LVL ${lvl} BOSS: ${bp.boss.toUpperCase()}`;
     document.getElementById('boss-hp-bar').style.width = '100%';
@@ -958,7 +910,6 @@ function spawnChunk(i, world, bp, isBossArena = false) {
       springs.push({ mesh: spMesh });
     }
 
-    // Dinosaurs & Fearless Rainforest Creatures in Amazon Parachute Rainforest & high levels
     if (key === 'amazon_parachute' || (lvl >= 7 && i % 4 === 2)) {
       const kind = (i % 2 === 0) ? 'dino' : 'creature';
       const beast = createDinoOrCreatureMesh(kind);
@@ -975,11 +926,10 @@ function spawnChunk(i, world, bp, isBossArena = false) {
       });
     }
 
-    // 7D Movie Orcs (heavy combat in Desert Fight & Motorbike Chase; active across levels)
-    const orcFreq = (key === 'fighting_desert') ? 2 : ((key === 'riding_motorbike') ? 2 : 4);
+    const orcFreq = (key === 'fighting_desert' || key === 'riding_motorbike') ? 2 : 4;
     if (i >= 2 && i % orcFreq === 0) {
       const orcRig = create7DOrcMesh();
-      const orcScale = 1.0 + ((i + world.id + lvl) % 3) * 0.15;
+      const orcScale = 1.0 + ((i + lvl) % 3) * 0.15;
       orcRig.orcGroup.scale.setScalar(orcScale);
       orcRig.orcGroup.position.set(x + 0.5, entityY, 0);
       scene.add(orcRig.orcGroup);
@@ -1014,7 +964,7 @@ function spawnChunk(i, world, bp, isBossArena = false) {
     }
 
     const foodMat = new THREE.MeshStandardMaterial({ color: 0xff2a55, emissive: 0x660015 });
-    const starMat = new THREE.MeshStandardMaterial({ color: world.accent, emissive: 0x775500 });
+    const starMat = new THREE.MeshStandardMaterial({ color: bp.accent, emissive: 0x775500 });
     for (let f = -1; f <= 1; f++) {
       const isStar = (f === 0 && i % 2 === 0);
       const cMesh = new THREE.Mesh(
@@ -1041,7 +991,6 @@ function initSession() {
   clearSceneEntities();
   const activeMember = state.squad[state.activePlayerIdx];
   const hero = activeMember ? activeMember.hero : state.selectedHero;
-  const world = state.selectedWorld;
   const bp = getLevelBlueprint(state.level);
   state.currentBlueprint = bp;
 
@@ -1099,14 +1048,14 @@ function initSession() {
     setVehicleMode('parachute', 650);
   }
 
-  const totalChunks = state.mode === 'adventure' ? 44 + (state.level - 1) * 4 : 36;
+  const totalChunks = state.mode === 'adventure' ? 22 : 36;
   for (let i = 0; i < totalChunks; i++) {
-    spawnChunk(i, world, bp, state.mode === 'adventure' && i === totalChunks - 1);
+    spawnChunk(i, bp, state.mode === 'adventure' && i === totalChunks - 1);
   }
 
   document.getElementById('hud-quest').textContent = bp.quest;
   showSceneBanner(`🚀 LVL ${state.level}: ${bp.title.toUpperCase()}`);
-  startBiomeAmbience(world.baseFreq + (state.level - 1) * 14);
+  startBiomeAmbience(bp.baseFreq + (state.level - 1) * 14);
   updateHUD();
 }
 
@@ -1148,11 +1097,11 @@ function spawnParticles(pos, colorHex, count = 10) {
 function updateHUD() {
   const member = state.squad[state.activePlayerIdx];
   const pName = member ? member.name : state.selectedHero.name;
-  const lvlTitle = state.currentBlueprint ? state.currentBlueprint.title : state.selectedWorld.name;
+  const bp = getLevelBlueprint(state.level);
   document.getElementById('hud-player-label').textContent = `P${state.activePlayerIdx + 1}: ${pName} • LVL ${state.level}`;
   document.getElementById('hud-world-name').textContent = state.mode === 'endurance'
     ? `LVL ${state.level} • 7D ENDURANCE`
-    : `LVL ${state.level} • ${lvlTitle}`;
+    : `LVL ${state.level} • ${bp.title}`;
   document.getElementById('hud-stars').textContent = state.stars;
   document.getElementById('hud-food').textContent = state.food;
   document.getElementById('hud-dist').textContent = `${state.distance}m`;
@@ -1233,12 +1182,16 @@ bindBtn('btn-dash', triggerDash);
 
 document.getElementById('btn-play').onclick = () => {
   buildSquadFromInputs();
-  state.level = 1;
   document.getElementById('start-screen').style.display = 'none';
   document.getElementById('hud').style.display = 'flex';
   document.getElementById('controls').style.display = 'flex';
   state.playing = true;
   initSession();
+};
+
+document.getElementById('btn-next-level-now').onclick = () => {
+  if (!state.playing) return;
+  finishTurn(`⏭️ JUMPED FROM LEVEL ${state.level}!`, true);
 };
 
 document.getElementById('btn-mega-start').onclick = () => {
@@ -1264,8 +1217,6 @@ function finishTurn(reasonTitle, wonStage = false) {
   stopBiomeAmbience();
   if (wonStage) {
     state.level += 1;
-    const nextWorldIdx = (state.selectedWorld.id + (state.level - 1) - 1) % WORLDS.length;
-    state.selectedWorld = WORLDS[nextWorldIdx];
   }
   const member = state.squad[state.activePlayerIdx];
   if (member) {
@@ -1351,8 +1302,7 @@ function animate() {
     }
 
     if (state.mode === 'endurance' && playerGroup.position.x + 75 > state.generatedUntilX) {
-      const dynamicWorld = WORLDS[Math.floor(state.chunkIndex / 12) % WORLDS.length];
-      spawnChunk(state.chunkIndex, dynamicWorld, state.currentBlueprint, false);
+      spawnChunk(state.chunkIndex, state.currentBlueprint, false);
     }
 
     const speedBoost = state.vehicleMode === 'bike' ? 1.55 : (state.vehicleMode === 'plane' ? 1.35 : 1.0);
@@ -1392,7 +1342,7 @@ function animate() {
     playerGroup.position.y += state.vy;
     state.distance = Math.max(state.distance, Math.floor(playerGroup.position.x));
 
-    if (state.mode === 'endurance' && state.distance > 0 && state.distance >= state.level * 150) {
+    if (state.mode === 'endurance' && state.distance > 0 && state.distance >= state.level * 120) {
       state.level += 1;
       state.currentBlueprint = getLevelBlueprint(state.level);
       scene.background = new THREE.Color(state.currentBlueprint.sky);
@@ -1438,7 +1388,6 @@ function animate() {
       }
     });
 
-    // Dinosaurs & Fearless Rainforest Creatures
     wildCreatures.forEach(wc => {
       if (!wc.alive) return;
       wc.group.position.x += wc.dir * (wc.kind === 'dino' ? 0.055 : 0.072) * lvlSpeedScale;
@@ -1482,7 +1431,6 @@ function animate() {
       }
     });
 
-    // 7D Movie Orc Patrol, Lunge/Chase & Combat
     let nearbyOrc = false;
     orcs.forEach(orc => {
       if (!orc.alive) return;
